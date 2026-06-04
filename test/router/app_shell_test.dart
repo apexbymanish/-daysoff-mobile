@@ -19,6 +19,8 @@ void main() {
       child: const DaysoffApp(),
     ));
     await tester.pumpAndSettle();
+    await tester.tap(find.text('Get started'));
+    await tester.pumpAndSettle();
 
     expect(find.byType(NavigationBar), findsOneWidget);
     expect(find.text('Holidays'), findsWidgets);
