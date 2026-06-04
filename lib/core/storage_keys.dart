@@ -5,6 +5,7 @@ class StorageKeys {
   static const year = 'selected_year';
   static const themeMode = 'theme_mode';
   static const onboardingSeen = 'onboarding_seen';
+  static const savedBreaks = 'saved_breaks';
 }
 
 /// Tracks whether [GetStorage.init()] has completed.
