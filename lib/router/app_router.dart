@@ -1,7 +1,9 @@
 import 'package:go_router/go_router.dart';
 
+import '../api/models/plan_trip.dart';
 import '../screens/home/home_screen.dart';
 import '../screens/onboarding/onboarding_screen.dart';
+import '../screens/plan/break_detail_screen.dart';
 import '../screens/plan/plan_screen.dart';
 import '../screens/sandwich/sandwich_screen.dart';
 import '../screens/settings/settings_screen.dart';
@@ -16,6 +18,7 @@ class AppRoutes {
   static const home = '/';
   static const onboarding = '/onboarding';
   static const plan = '/plan';
+  static const breakDetail = '/plan/break';
   static const sandwich = '/sandwich';
   static const settings = '/settings';
 }
@@ -34,6 +37,11 @@ final appRouter = GoRouter(
     GoRoute(
       path: AppRoutes.plan,
       builder: (context, state) => const PlanScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.breakDetail,
+      builder: (context, state) =>
+          BreakDetailScreen(trip: state.extra! as PlanTrip),
     ),
     GoRoute(
       path: AppRoutes.sandwich,

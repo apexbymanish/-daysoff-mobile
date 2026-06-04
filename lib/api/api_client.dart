@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 
 import 'endpoints.dart';
 import 'models/holidays_response.dart';
+import 'models/plan_response.dart';
 
 /// Thin dio wrapper for the daysoff-api.
 ///
@@ -40,5 +41,25 @@ class ApiClient {
       },
     );
     return HolidaysResponse.fromJson(response.data!);
+  }
+
+  Future<PlanResponse> getPlan({
+    required String country,
+    required int year,
+    int budget = 15,
+    int minLength = 3,
+    int maxLength = 10,
+  }) async {
+    final response = await _dio.get<Map<String, dynamic>>(
+      Endpoints.plan,
+      queryParameters: {
+        'country': country,
+        'year': year,
+        'budget': budget,
+        'min_length': minLength,
+        'max_length': maxLength,
+      },
+    );
+    return PlanResponse.fromJson(response.data!);
   }
 }
