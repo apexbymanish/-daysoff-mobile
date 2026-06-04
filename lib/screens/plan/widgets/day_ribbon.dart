@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../api/models/plan_trip.dart';
+import '../../../core/break_days.dart';
 import '../../../theme/colors.dart';
 
 /// A horizontal strip of colored blocks, one per day of the break.
@@ -9,15 +10,11 @@ class DayRibbon extends StatelessWidget {
   const DayRibbon({super.key, required this.trip});
   final PlanTrip trip;
 
-  static const _weekend = {DateTime.saturday, DateTime.sunday};
-
-  Color _colorFor(DateTime day) {
-    final isPto = trip.ptoDates.any((p) =>
-        p.year == day.year && p.month == day.month && p.day == day.day);
-    if (isPto) return DaysoffColors.sage; // PTO
-    if (_weekend.contains(day.weekday)) return DaysoffColors.brandTeal; // weekend
-    return DaysoffColors.peach; // holiday
-  }
+  Color _colorFor(DateTime day) => switch (classifyBreakDay(day, trip.ptoDates)) {
+        BreakDayKind.pto => DaysoffColors.sage,
+        BreakDayKind.weekend => DaysoffColors.brandTeal,
+        BreakDayKind.holiday => DaysoffColors.peach,
+      };
 
   @override
   Widget build(BuildContext context) {
