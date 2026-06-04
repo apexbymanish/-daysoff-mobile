@@ -29,6 +29,9 @@ dependencies:
   # Date / locale formatting
   intl: ^0.20.1
 
+  # On-device key-value persistence
+  get_storage: ^2.1.1
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

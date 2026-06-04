@@ -1,7 +1,9 @@
 import 'package:flutter/widgets.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:go_router/go_router.dart';
 
 import '../api/models/plan_trip.dart';
+import '../core/storage_keys.dart';
 import '../screens/country_picker/country_picker_screen.dart';
 import '../screens/home/home_screen.dart';
 import '../screens/onboarding/onboarding_screen.dart';
@@ -27,6 +29,17 @@ final _rootNavigatorKey = GlobalKey<NavigatorState>();
 final appRouter = GoRouter(
   navigatorKey: _rootNavigatorKey,
   initialLocation: AppRoutes.onboarding,
+  redirect: (context, state) {
+    // Only read storage when it has been initialized; otherwise treat as unseen
+    // so that tests which skip GetStorage.init() work with the defaults.
+    if (!storageReady) return null;
+    final seen =
+        GetStorage().read<bool>(StorageKeys.onboardingSeen) ?? false;
+    final atOnboarding = state.matchedLocation == AppRoutes.onboarding;
+    if (seen && atOnboarding) return AppRoutes.home; // skip Welcome on return visits
+    if (!seen && !atOnboarding) return AppRoutes.onboarding; // force Welcome first-launch
+    return null;
+  },
   routes: [
     StatefulShellRoute.indexedStack(
       builder: (context, state, navigationShell) =>
