@@ -68,7 +68,7 @@ class _Buffet extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 8),
           child: Text(
-            '🇰🇷 KR · ${response.year} · budget ${response.budget} days',
+            '${response.country == 'KR' ? '🇰🇷' : '🌐'} ${response.country} · ${response.year} · budget ${response.budget} days',
             style: const TextStyle(fontSize: 13, color: DaysoffColors.neutral700),
           ),
         ),

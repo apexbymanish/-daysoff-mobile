@@ -85,7 +85,7 @@ class _HolidaysList extends ConsumerWidget {
                 onTap: () => context.push(AppRoutes.countryPicker),
               ),
               const SizedBox(width: 12),
-              _YearStepper(year: year, ref: ref),
+              _YearStepper(year: year),
             ],
           ),
         ),
@@ -142,13 +142,12 @@ class _TappableCountryChip extends StatelessWidget {
   }
 }
 
-class _YearStepper extends StatelessWidget {
-  const _YearStepper({required this.year, required this.ref});
+class _YearStepper extends ConsumerWidget {
+  const _YearStepper({required this.year});
   final int year;
-  final WidgetRef ref;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [

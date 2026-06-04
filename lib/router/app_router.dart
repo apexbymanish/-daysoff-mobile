@@ -74,6 +74,7 @@ final appRouter = GoRouter(
     // Country picker — full-screen over the nav bar (root navigator).
     GoRoute(
       path: AppRoutes.countryPicker,
+      parentNavigatorKey: _rootNavigatorKey,
       builder: (context, state) => const CountryPickerScreen(),
     ),
   ],
