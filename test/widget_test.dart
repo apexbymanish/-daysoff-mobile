@@ -23,6 +23,9 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
+    // App opens on the Welcome screen; enter the app.
+    await tester.tap(find.text('Get started'));
+    await tester.pumpAndSettle();
 
     expect(find.byType(MaterialApp), findsOneWidget);
     expect(find.byType(NavigationBar), findsOneWidget);

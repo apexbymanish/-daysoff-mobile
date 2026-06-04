@@ -26,7 +26,7 @@ final _rootNavigatorKey = GlobalKey<NavigatorState>();
 
 final appRouter = GoRouter(
   navigatorKey: _rootNavigatorKey,
-  initialLocation: AppRoutes.home,
+  initialLocation: AppRoutes.onboarding,
   routes: [
     StatefulShellRoute.indexedStack(
       builder: (context, state, navigationShell) =>
