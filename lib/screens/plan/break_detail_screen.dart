@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import '../../api/models/plan_trip.dart';
+import '../../api/models/saved_break.dart';
 import '../../core/break_days.dart';
+import '../../providers/saved_breaks_provider.dart';
 import '../../theme/colors.dart';
 
-class BreakDetailScreen extends StatelessWidget {
+class BreakDetailScreen extends ConsumerWidget {
   const BreakDetailScreen({super.key, required this.trip});
   final PlanTrip trip;
 
@@ -15,7 +18,7 @@ class BreakDetailScreen extends StatelessWidget {
       };
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final fmt = DateFormat('EEE MMM d');
     final days = <DateTime>[];
     for (var d = trip.breakStart;
@@ -51,6 +54,26 @@ class BreakDetailScreen extends StatelessWidget {
                   ],
                 ),
               ),
+            const SizedBox(height: 20),
+            FilledButton.icon(
+              style: FilledButton.styleFrom(
+                  minimumSize: const Size.fromHeight(48),
+                  backgroundColor: DaysoffColors.sage),
+              icon: const Icon(Icons.bookmark_add_outlined),
+              label: const Text('Save this break'),
+              onPressed: () {
+                ref.read(savedBreaksProvider.notifier).add(SavedBreak(
+                      id: 'break-${trip.breakStart.toIso8601String()}',
+                      label: '${trip.breakLength}-day break',
+                      start: trip.breakStart,
+                      end: trip.breakEnd,
+                      ptoCost: trip.ptoCost,
+                      kind: 'break',
+                    ));
+                ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Saved')));
+              },
+            ),
           ],
         ),
       ),
