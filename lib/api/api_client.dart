@@ -3,6 +3,7 @@ import 'package:dio/dio.dart';
 import 'endpoints.dart';
 import 'models/holidays_response.dart';
 import 'models/plan_response.dart';
+import 'models/sandwiches_response.dart';
 
 /// Thin dio wrapper for the daysoff-api.
 ///
@@ -61,5 +62,21 @@ class ApiClient {
       },
     );
     return PlanResponse.fromJson(response.data!);
+  }
+
+  Future<SandwichesResponse> getSandwiches({
+    required String country,
+    required int year,
+    List<String>? workweek,
+  }) async {
+    final response = await _dio.get<Map<String, dynamic>>(
+      Endpoints.sandwiches,
+      queryParameters: {
+        'country': country,
+        'year': year,
+        if (workweek != null && workweek.isNotEmpty) 'workweek': workweek.join(','),
+      },
+    );
+    return SandwichesResponse.fromJson(response.data!);
   }
 }
