@@ -7,6 +7,7 @@ import '../../api/models/plan_trip.dart';
 import '../../providers/plan_provider.dart';
 import '../../providers/selection_provider.dart';
 import '../../router/app_router.dart';
+import '../../core/country_flag.dart';
 import '../../theme/colors.dart';
 import 'widgets/break_card.dart';
 
@@ -68,7 +69,7 @@ class _Buffet extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 8),
           child: Text(
-            '${response.country == 'KR' ? '🇰🇷' : '🌐'} ${response.country} · ${response.year} · budget ${response.budget} days',
+            '${countryFlag(response.country)} ${response.country} · ${response.year} · budget ${response.budget} days',
             style: const TextStyle(fontSize: 13, color: DaysoffColors.neutral700),
           ),
         ),

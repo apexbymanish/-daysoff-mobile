@@ -6,6 +6,7 @@ import '../../api/models/holiday.dart';
 import '../../providers/holidays_provider.dart';
 import '../../providers/selection_provider.dart';
 import '../../router/app_router.dart';
+import '../../core/country_flag.dart';
 import '../../theme/colors.dart';
 import 'widgets/days_until_banner.dart';
 import 'widgets/holiday_card.dart';
@@ -81,7 +82,7 @@ class _HolidaysList extends ConsumerWidget {
             children: [
               _TappableCountryChip(
                 code: country,
-                flag: country == 'KR' ? '🇰🇷' : '🌐',
+                flag: countryFlag(country),
                 onTap: () => context.push(AppRoutes.countryPicker),
               ),
               const SizedBox(width: 12),
