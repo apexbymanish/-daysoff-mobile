@@ -1,21 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../../api/models/plan_trip.dart';
+import '../../core/break_days.dart';
 import '../../theme/colors.dart';
 
 class BreakDetailScreen extends StatelessWidget {
   const BreakDetailScreen({super.key, required this.trip});
   final PlanTrip trip;
 
-  static const _weekend = {DateTime.saturday, DateTime.sunday};
-
-  String _kindFor(DateTime day) {
-    final isPto = trip.ptoDates.any((p) =>
-        p.year == day.year && p.month == day.month && p.day == day.day);
-    if (isPto) return 'PTO';
-    if (_weekend.contains(day.weekday)) return 'Weekend';
-    return 'Holiday';
-  }
+  String _kindFor(DateTime day) => switch (classifyBreakDay(day, trip.ptoDates)) {
+        BreakDayKind.pto => 'PTO',
+        BreakDayKind.weekend => 'Weekend',
+        BreakDayKind.holiday => 'Holiday',
+      };
 
   @override
   Widget build(BuildContext context) {
