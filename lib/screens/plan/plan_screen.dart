@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../api/models/plan_response.dart';
 import '../../api/models/plan_trip.dart';
 import '../../providers/plan_provider.dart';
+import '../../providers/selection_provider.dart';
 import '../../router/app_router.dart';
 import '../../theme/colors.dart';
 import 'widgets/break_card.dart';
@@ -12,17 +13,18 @@ import 'widgets/break_card.dart';
 class PlanScreen extends ConsumerWidget {
   const PlanScreen({super.key});
 
-  static const _query = PlanQuery(country: 'KR', year: 2026, budget: 15);
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final planAsync = ref.watch(planProvider(_query));
+    final country = ref.watch(selectedCountryProvider);
+    final year = ref.watch(selectedYearProvider);
+    final query = PlanQuery(country: country, year: year, budget: 15);
+    final planAsync = ref.watch(planProvider(query));
     return Scaffold(
       appBar: AppBar(title: const Text('Plan your year')),
       body: SafeArea(
         child: planAsync.when(
           loading: () => const Center(child: CircularProgressIndicator()),
-          error: (e, _) => _PlanError(onRetry: () => ref.invalidate(planProvider(_query))),
+          error: (e, _) => _PlanError(onRetry: () => ref.invalidate(planProvider(query))),
           data: (resp) => _Buffet(response: resp),
         ),
       ),

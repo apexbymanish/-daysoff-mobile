@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../api/models/holiday.dart';
 import '../../providers/holidays_provider.dart';
+import '../../providers/selection_provider.dart';
+import '../../router/app_router.dart';
 import '../../theme/colors.dart';
 import 'widgets/days_until_banner.dart';
 import 'widgets/holiday_card.dart';
@@ -11,15 +14,12 @@ import 'widgets/month_section.dart';
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
 
-  // Hardcoded for the scaffold — country picker + year stepper land in a
-  // later session. KR 2026 matches the Stitch sample data throughout.
-  static const _country = 'KR';
-  static const _year = 2026;
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final country = ref.watch(selectedCountryProvider);
+    final year = ref.watch(selectedYearProvider);
     final holidaysAsync =
-        ref.watch(holidaysProvider(const HolidaysQuery(country: _country, year: _year)));
+        ref.watch(holidaysProvider(HolidaysQuery(country: country, year: year)));
 
     return Scaffold(
       body: SafeArea(
@@ -28,23 +28,33 @@ class HomeScreen extends ConsumerWidget {
           error: (err, stack) => _ErrorState(
             message: err.toString(),
             onRetry: () => ref.invalidate(
-              holidaysProvider(const HolidaysQuery(country: _country, year: _year)),
+              holidaysProvider(HolidaysQuery(country: country, year: year)),
             ),
           ),
-          data: (response) => _HolidaysList(holidays: response.holidays),
+          data: (response) => _HolidaysList(
+            holidays: response.holidays,
+            country: country,
+            year: year,
+          ),
         ),
       ),
     );
   }
 }
 
-class _HolidaysList extends StatelessWidget {
-  const _HolidaysList({required this.holidays});
+class _HolidaysList extends ConsumerWidget {
+  const _HolidaysList({
+    required this.holidays,
+    required this.country,
+    required this.year,
+  });
 
   final List<Holiday> holidays;
+  final String country;
+  final int year;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     if (holidays.isEmpty) {
       return const _EmptyState();
     }
@@ -69,10 +79,13 @@ class _HolidaysList extends StatelessWidget {
           backgroundColor: DaysoffColors.creamSoft,
           title: Row(
             children: [
-              _CountryChip(code: 'KR', flag: '🇰🇷'),
+              _TappableCountryChip(
+                code: country,
+                flag: country == 'KR' ? '🇰🇷' : '🌐',
+                onTap: () => context.push(AppRoutes.countryPicker),
+              ),
               const SizedBox(width: 12),
-              const Text('2026',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
+              _YearStepper(year: year, ref: ref),
             ],
           ),
         ),
@@ -94,28 +107,72 @@ class _HolidaysList extends StatelessWidget {
   }
 }
 
-class _CountryChip extends StatelessWidget {
-  const _CountryChip({required this.code, required this.flag});
+class _TappableCountryChip extends StatelessWidget {
+  const _TappableCountryChip({
+    required this.code,
+    required this.flag,
+    required this.onTap,
+  });
   final String code;
   final String flag;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-      decoration: BoxDecoration(
-        color: DaysoffColors.cream,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: DaysoffColors.neutral300, width: 1),
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(20),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+        decoration: BoxDecoration(
+          color: DaysoffColors.cream,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: DaysoffColors.neutral300, width: 1),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(flag, style: const TextStyle(fontSize: 16)),
+            const SizedBox(width: 6),
+            Text(code, style: const TextStyle(fontWeight: FontWeight.w600)),
+          ],
+        ),
       ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(flag, style: const TextStyle(fontSize: 16)),
-          const SizedBox(width: 6),
-          Text(code, style: const TextStyle(fontWeight: FontWeight.w600)),
-        ],
-      ),
+    );
+  }
+}
+
+class _YearStepper extends StatelessWidget {
+  const _YearStepper({required this.year, required this.ref});
+  final int year;
+  final WidgetRef ref;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        IconButton(
+          icon: const Icon(Icons.chevron_left),
+          onPressed: () =>
+              ref.read(selectedYearProvider.notifier).state = year - 1,
+          iconSize: 20,
+          padding: EdgeInsets.zero,
+          constraints: const BoxConstraints(),
+        ),
+        Text(
+          '$year',
+          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+        ),
+        IconButton(
+          icon: const Icon(Icons.chevron_right),
+          onPressed: () =>
+              ref.read(selectedYearProvider.notifier).state = year + 1,
+          iconSize: 20,
+          padding: EdgeInsets.zero,
+          constraints: const BoxConstraints(),
+        ),
+      ],
     );
   }
 }
