@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:daysoff_mobile/api/models/sandwich_record.dart';
+import 'package:daysoff_mobile/providers/saved_breaks_provider.dart';
 import 'package:daysoff_mobile/screens/sandwich/widgets/sandwich_card.dart';
 
 SandwichRecord _rec() => SandwichRecord(
@@ -13,7 +15,8 @@ SandwichRecord _rec() => SandwichRecord(
       context: "Weekend + Children's Day",
     );
 
-Widget _host(Widget child) => MaterialApp(home: Scaffold(body: child));
+Widget _host(Widget child) =>
+    ProviderScope(child: MaterialApp(home: Scaffold(body: child)));
 
 void main() {
   testWidgets('shows take-off line, break length, context and PTO pill',
@@ -23,5 +26,17 @@ void main() {
     expect(find.textContaining('4-day break'), findsOneWidget);
     expect(find.textContaining("Weekend + Children's Day"), findsOneWidget);
     expect(find.text('1 PTO'), findsOneWidget);
+  });
+
+  testWidgets('Save adds to savedBreaksProvider', (tester) async {
+    final container = ProviderContainer();
+    addTearDown(container.dispose);
+    await tester.pumpWidget(UncontrolledProviderScope(
+      container: container,
+      child: MaterialApp(home: Scaffold(body: SandwichCard(record: _rec()))),
+    ));
+    await tester.tap(find.text('Save'));
+    await tester.pump();
+    expect(container.read(savedBreaksProvider).length, 1);
   });
 }
