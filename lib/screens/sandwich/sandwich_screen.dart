@@ -3,24 +3,26 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../api/models/sandwiches_response.dart';
 import '../../providers/sandwiches_provider.dart';
+import '../../providers/selection_provider.dart';
 import '../../theme/colors.dart';
 import 'widgets/sandwich_card.dart';
 
 class SandwichScreen extends ConsumerWidget {
   const SandwichScreen({super.key});
 
-  static const _query = SandwichesQuery(country: 'KR', year: 2026);
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final async = ref.watch(sandwichesProvider(_query));
+    final country = ref.watch(selectedCountryProvider);
+    final year = ref.watch(selectedYearProvider);
+    final query = SandwichesQuery(country: country, year: year);
+    final async = ref.watch(sandwichesProvider(query));
     return Scaffold(
       appBar: AppBar(title: const Text('Sandwich days')),
       body: SafeArea(
         child: async.when(
           loading: () => const Center(child: CircularProgressIndicator()),
           error: (e, _) => _SandwichError(
-              onRetry: () => ref.invalidate(sandwichesProvider(_query))),
+              onRetry: () => ref.invalidate(sandwichesProvider(query))),
           data: (resp) => _SandwichList(response: resp),
         ),
       ),

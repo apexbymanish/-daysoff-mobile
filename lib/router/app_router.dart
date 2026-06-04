@@ -2,6 +2,7 @@ import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 
 import '../api/models/plan_trip.dart';
+import '../screens/country_picker/country_picker_screen.dart';
 import '../screens/home/home_screen.dart';
 import '../screens/onboarding/onboarding_screen.dart';
 import '../screens/plan/break_detail_screen.dart';
@@ -18,6 +19,7 @@ class AppRoutes {
   static const breakDetail = '/plan/break';
   static const sandwich = '/sandwich';
   static const settings = '/settings';
+  static const countryPicker = '/picker/country';
 }
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
@@ -68,6 +70,12 @@ final appRouter = GoRouter(
     GoRoute(
       path: AppRoutes.onboarding,
       builder: (context, state) => const OnboardingScreen(),
+    ),
+    // Country picker — full-screen over the nav bar (root navigator).
+    GoRoute(
+      path: AppRoutes.countryPicker,
+      parentNavigatorKey: _rootNavigatorKey,
+      builder: (context, state) => const CountryPickerScreen(),
     ),
   ],
 );
