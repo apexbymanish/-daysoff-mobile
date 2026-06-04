@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../../../api/models/sandwich_record.dart';
 import '../../../theme/colors.dart';
+import '../../../widgets/dashed_border.dart';
 import '../../plan/widgets/pto_cost_pill.dart';
 
 /// A single sandwich-day suggestion. Outlined card (dashed-border styling is
@@ -15,13 +16,15 @@ class SandwichCard extends StatelessWidget {
     final dayFmt = DateFormat('MMM d');
     final ptoLabel = '${record.weekday} ${dayFmt.format(record.ptoDate)}';
     final range = '${dayFmt.format(record.breakStart)}–${dayFmt.format(record.breakEnd)}';
-    return Container(
+    return DashedBorder(
+      color: DaysoffColors.sage,
+      radius: 16,
+      child: Container(
       margin: const EdgeInsets.symmetric(vertical: 8),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: DaysoffColors.creamSoft,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: DaysoffColors.sage, width: 1.5),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -52,6 +55,7 @@ class SandwichCard extends StatelessWidget {
           ),
         ],
       ),
+    ),
     );
   }
 }
