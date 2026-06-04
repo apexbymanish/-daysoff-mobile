@@ -1,8 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../core/storage_keys.dart';
 import '../../router/app_router.dart';
 import '../../theme/colors.dart';
+
+/// Writes the onboarding-seen flag to storage, but only when [storageReady]
+/// is true (no-op in tests that skip GetStorage.init()).
+void _markSeen() {
+  if (!storageReady) return;
+  try {
+    GetStorage().write(StorageKeys.onboardingSeen, true);
+  } catch (_) {/* silently ignored */}
+}
 
 /// Value-first welcome. "Get started" enters the app immediately; the
 /// secondary action lets the user choose their work country first.
@@ -57,7 +68,10 @@ class OnboardingScreen extends StatelessWidget {
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(26)),
                     ),
-                    onPressed: () => context.go(AppRoutes.home),
+                    onPressed: () {
+                      _markSeen();
+                      context.go(AppRoutes.home);
+                    },
                     child: const Text('Get started',
                         style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
                   ),
@@ -65,7 +79,10 @@ class OnboardingScreen extends StatelessWidget {
                 const SizedBox(height: 12),
                 Center(
                   child: TextButton(
-                    onPressed: () => context.push(AppRoutes.countryPicker),
+                    onPressed: () {
+                      _markSeen();
+                      context.push(AppRoutes.countryPicker);
+                    },
                     child: const Text('Choose your work country',
                         style: TextStyle(color: DaysoffColors.cream)),
                   ),
