@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 
 import 'endpoints.dart';
+import 'models/countries_response.dart';
 import 'models/holidays_response.dart';
 import 'models/plan_response.dart';
 import 'models/sandwiches_response.dart';
@@ -78,5 +79,10 @@ class ApiClient {
       },
     );
     return SandwichesResponse.fromJson(response.data!);
+  }
+
+  Future<CountriesResponse> getCountries() async {
+    final response = await _dio.get<Map<String, dynamic>>(Endpoints.countries);
+    return CountriesResponse.fromJson(response.data!);
   }
 }
