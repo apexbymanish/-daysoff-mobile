@@ -10,6 +10,7 @@ import '../screens/onboarding/onboarding_screen.dart';
 import '../screens/plan/break_detail_screen.dart';
 import '../screens/plan/plan_screen.dart';
 import '../screens/sandwich/sandwich_screen.dart';
+import '../screens/saved/saved_screen.dart';
 import '../screens/settings/settings_screen.dart';
 import 'scaffold_with_nav_bar.dart';
 
@@ -22,6 +23,7 @@ class AppRoutes {
   static const sandwich = '/sandwich';
   static const settings = '/settings';
   static const countryPicker = '/picker/country';
+  static const saved = '/saved';
 }
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
@@ -89,6 +91,12 @@ final appRouter = GoRouter(
       path: AppRoutes.countryPicker,
       parentNavigatorKey: _rootNavigatorKey,
       builder: (context, state) => const CountryPickerScreen(),
+    ),
+    // Saved breaks — full-screen over the nav bar (root navigator).
+    GoRoute(
+      path: AppRoutes.saved,
+      parentNavigatorKey: _rootNavigatorKey,
+      builder: (context, state) => const SavedScreen(),
     ),
   ],
 );

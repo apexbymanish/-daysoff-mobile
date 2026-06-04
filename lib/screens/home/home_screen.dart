@@ -89,6 +89,12 @@ class _HolidaysList extends ConsumerWidget {
               _YearStepper(year: year),
             ],
           ),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.bookmark_border),
+              onPressed: () => context.push(AppRoutes.saved),
+            ),
+          ],
         ),
         if (upcoming.isNotEmpty)
           SliverToBoxAdapter(
