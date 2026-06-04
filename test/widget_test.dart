@@ -7,7 +7,7 @@ import 'package:daysoff_mobile/app.dart';
 import 'package:daysoff_mobile/providers/holidays_provider.dart';
 
 void main() {
-  testWidgets('App builds and shows empty Home without hitting the network',
+  testWidgets('App boots to Home (empty) inside the nav shell, no network',
       (tester) async {
     await tester.pumpWidget(
       ProviderScope(
@@ -15,21 +15,17 @@ void main() {
           holidaysProvider(const HolidaysQuery(country: 'KR', year: 2026))
               .overrideWith(
             (ref) async => const HolidaysResponse(
-              country: 'KR',
-              year: 2026,
-              count: 0,
-              holidays: [],
+              country: 'KR', year: 2026, count: 0, holidays: [],
             ),
           ),
         ],
         child: const DaysoffApp(),
       ),
     );
-
-    // Let the future resolve.
     await tester.pumpAndSettle();
 
     expect(find.byType(MaterialApp), findsOneWidget);
+    expect(find.byType(NavigationBar), findsOneWidget);
     expect(find.text('No holidays for this year.'), findsOneWidget);
   });
 }
