@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import 'colors.dart';
 
@@ -20,8 +19,9 @@ class DaysoffTheme {
     return ThemeData(
       useMaterial3: true,
       colorScheme: colorScheme,
+      fontFamily: 'Manrope',
       scaffoldBackgroundColor: DaysoffColors.creamSoft,
-      textTheme: GoogleFonts.manropeTextTheme(_textTheme(Brightness.light)),
+      textTheme: _textTheme(Brightness.light).apply(fontFamily: 'Manrope'),
       appBarTheme: AppBarTheme(
         backgroundColor: DaysoffColors.creamSoft,
         foregroundColor: DaysoffColors.neutral900,
@@ -44,8 +44,9 @@ class DaysoffTheme {
     return ThemeData(
       useMaterial3: true,
       colorScheme: colorScheme,
+      fontFamily: 'Manrope',
       scaffoldBackgroundColor: DaysoffColors.darkBackground,
-      textTheme: GoogleFonts.manropeTextTheme(_textTheme(Brightness.dark)),
+      textTheme: _textTheme(Brightness.dark).apply(fontFamily: 'Manrope'),
       appBarTheme: const AppBarTheme(
         backgroundColor: DaysoffColors.darkBackground,
         foregroundColor: DaysoffColors.cream,

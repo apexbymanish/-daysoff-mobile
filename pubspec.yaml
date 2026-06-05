@@ -32,7 +32,6 @@ dependencies:
   # On-device key-value persistence
   get_storage: ^2.1.1
   table_calendar: ^3.2.0
-  google_fonts: ^8.1.0
 
 dev_dependencies:
   flutter_test:
@@ -57,6 +56,14 @@ flutter:
   uses-material-design: true
   assets:
     - assets/scenery/
+
+  fonts:
+    - family: Manrope
+      fonts:
+        - asset: assets/fonts/Manrope.ttf
+    - family: JetBrains Mono
+      fonts:
+        - asset: assets/fonts/JetBrainsMono.ttf
 
   # To add assets to your application, add an assets section, like this:
   # assets:
