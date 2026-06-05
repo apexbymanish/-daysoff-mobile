@@ -4,11 +4,13 @@ import 'package:go_router/go_router.dart';
 
 import '../../api/models/holiday.dart';
 import '../../providers/holidays_provider.dart';
+import '../../providers/holidays_view_provider.dart';
 import '../../providers/selection_provider.dart';
 import '../../router/app_router.dart';
 import '../../core/country_flag.dart';
 import '../../theme/colors.dart';
 import 'widgets/days_until_banner.dart';
+import 'widgets/holiday_calendar_view.dart';
 import 'widgets/holiday_card.dart';
 import 'widgets/month_section.dart';
 
@@ -71,6 +73,8 @@ class _HolidaysList extends ConsumerWidget {
     }
     final months = byMonth.keys.toList()..sort();
 
+    final view = ref.watch(holidaysViewProvider);
+
     return CustomScrollView(
       slivers: [
         SliverAppBar(
@@ -91,22 +95,46 @@ class _HolidaysList extends ConsumerWidget {
           ),
           actions: [
             IconButton(
+              key: const Key('toggle-list'),
+              icon: Icon(Icons.view_agenda_outlined,
+                  color: view == HolidaysView.list
+                      ? DaysoffColors.brandTeal
+                      : DaysoffColors.neutral500),
+              onPressed: () =>
+                  ref.read(holidaysViewProvider.notifier).state = HolidaysView.list,
+            ),
+            IconButton(
+              key: const Key('toggle-calendar'),
+              icon: Icon(Icons.calendar_month_outlined,
+                  color: view == HolidaysView.calendar
+                      ? DaysoffColors.brandTeal
+                      : DaysoffColors.neutral500),
+              onPressed: () =>
+                  ref.read(holidaysViewProvider.notifier).state = HolidaysView.calendar,
+            ),
+            IconButton(
               icon: const Icon(Icons.bookmark_border),
               onPressed: () => context.push(AppRoutes.saved),
             ),
           ],
         ),
-        if (upcoming.isNotEmpty)
+        if (view == HolidaysView.calendar)
           SliverToBoxAdapter(
-            child: DaysUntilBanner(next: upcoming.first),
-          ),
-        for (final month in months) ...[
-          SliverToBoxAdapter(child: MonthSection(month: month)),
-          SliverList.builder(
-            itemCount: byMonth[month]!.length,
-            itemBuilder: (context, index) =>
-                HolidayCard(holiday: byMonth[month]![index]),
-          ),
+            child: HolidayCalendarView(holidays: holidays, year: year),
+          )
+        else ...[
+          if (upcoming.isNotEmpty)
+            SliverToBoxAdapter(
+              child: DaysUntilBanner(next: upcoming.first),
+            ),
+          for (final month in months) ...[
+            SliverToBoxAdapter(child: MonthSection(month: month)),
+            SliverList.builder(
+              itemCount: byMonth[month]!.length,
+              itemBuilder: (context, index) =>
+                  HolidayCard(holiday: byMonth[month]![index]),
+            ),
+          ],
         ],
         const SliverToBoxAdapter(child: SizedBox(height: 32)),
       ],
