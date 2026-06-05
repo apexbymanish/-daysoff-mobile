@@ -11,6 +11,7 @@ class PlanQuery {
     this.budget = 15,
     this.minLength = 3,
     this.maxLength = 10,
+    this.workweek = const [],
   });
 
   final String country;
@@ -18,6 +19,7 @@ class PlanQuery {
   final int budget;
   final int minLength;
   final int maxLength;
+  final List<String> workweek;
 
   @override
   bool operator ==(Object other) =>
@@ -26,10 +28,20 @@ class PlanQuery {
       other.year == year &&
       other.budget == budget &&
       other.minLength == minLength &&
-      other.maxLength == maxLength;
+      other.maxLength == maxLength &&
+      _listEq(other.workweek, workweek);
 
   @override
-  int get hashCode => Object.hash(country, year, budget, minLength, maxLength);
+  int get hashCode =>
+      Object.hash(country, year, budget, minLength, maxLength, Object.hashAll(workweek));
+}
+
+bool _listEq(List<String> a, List<String> b) {
+  if (a.length != b.length) return false;
+  for (var i = 0; i < a.length; i++) {
+    if (a[i] != b[i]) return false;
+  }
+  return true;
 }
 
 /// Fetches /v1/plan for the given query.
@@ -41,5 +53,6 @@ final planProvider = FutureProvider.family<PlanResponse, PlanQuery>((ref, q) {
     budget: q.budget,
     minLength: q.minLength,
     maxLength: q.maxLength,
+    workweek: q.workweek,
   );
 });
