@@ -38,4 +38,32 @@ void main() {
     await _pump(tester, weekend: const ['fri']);
     expect(find.text('Absorbed'), findsOneWidget);
   });
+
+  testWidgets('onTap fires when the card is tapped', (tester) async {
+    var tapped = false;
+    final days = const ['sat', 'sun'];
+    final container = ProviderContainer(
+      overrides: [weekendProvider.overrideWith((ref) => days)],
+    );
+    addTearDown(container.dispose);
+    await tester.pumpWidget(UncontrolledProviderScope(
+      container: container,
+      child: MaterialApp(
+        home: Scaffold(
+          body: HolidayCard(
+            holiday: _h(),
+            onTap: () => tapped = true,
+          ),
+        ),
+      ),
+    ));
+    await tester.tap(find.byType(HolidayCard));
+    expect(tapped, isTrue);
+  });
+
+  testWidgets('HolidayCard with no onTap is inert (no crash)', (tester) async {
+    await _pump(tester); // no onTap
+    await tester.tap(find.byType(HolidayCard));
+    // No exception expected
+  });
 }
