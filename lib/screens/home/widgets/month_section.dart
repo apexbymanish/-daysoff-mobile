@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import '../../../theme/colors.dart';
+import '../../../theme/typography.dart';
 
 /// Month-group section header above a run of HolidayCards.
 /// Matches Stitch 6.1: uppercase caps label + a horizontal divider line.
@@ -21,9 +22,8 @@ class MonthSection extends StatelessWidget {
         children: [
           Text(
             name.toUpperCase(),
-            style: const TextStyle(
+            style: labelCaps(
               fontSize: 12,
-              fontWeight: FontWeight.w500,
               color: DaysoffColors.neutral700,
               letterSpacing: 1.2,
             ),

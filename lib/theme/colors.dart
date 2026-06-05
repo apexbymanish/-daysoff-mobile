@@ -28,6 +28,7 @@ class DaysoffColors {
   static const Color neutral500 = Color(0xFF8B9197);
   static const Color neutral300 = Color(0xFFD4D8DB);
   static const Color neutral100 = Color(0xFFF1F3F4);
+  static const Color outlineVariant = Color(0xFFC0C8C8);
 
   // Dark mode
   static const Color darkBackground = Color(0xFF0B0D0E);
