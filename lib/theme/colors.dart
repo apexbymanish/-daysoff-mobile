@@ -36,4 +36,7 @@ class DaysoffColors {
   // Semantic
   static const Color danger = Color(0xFFB54545);
   static const Color dangerDark = Color(0xFFD66B6B);
+
+  // Regional accent — Korea-red, for holiday tags (matches Stitch 6.x).
+  static const Color koreaRed = Color(0xFFCD2E3A);
 }

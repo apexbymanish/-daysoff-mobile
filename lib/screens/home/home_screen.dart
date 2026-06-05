@@ -7,7 +7,6 @@ import '../../providers/holidays_provider.dart';
 import '../../providers/holidays_view_provider.dart';
 import '../../providers/selection_provider.dart';
 import '../../router/app_router.dart';
-import '../../core/country_flag.dart';
 import '../../theme/colors.dart';
 import 'widgets/day_detail_sheet.dart';
 import 'widgets/holiday_calendar_view.dart';
@@ -26,6 +25,7 @@ class HomeScreen extends ConsumerWidget {
         ref.watch(holidaysProvider(HolidaysQuery(country: country, year: year)));
 
     return Scaffold(
+      backgroundColor: const Color(0xFFF9F9F9),
       body: SafeArea(
         child: holidaysAsync.when(
           loading: () => const Center(child: CircularProgressIndicator()),
@@ -82,37 +82,60 @@ class _HolidaysList extends ConsumerWidget {
           pinned: true,
           floating: false,
           elevation: 0,
-          backgroundColor: DaysoffColors.creamSoft,
+          backgroundColor: const Color(0xFFF9F9F9),
+          bottom: PreferredSize(
+            preferredSize: const Size.fromHeight(1),
+            child: Container(
+              height: 1,
+              color: const Color(0xFFC0C8C8), // outline-variant
+            ),
+          ),
           title: Row(
             children: [
-              _TappableCountryChip(
-                code: country,
-                flag: countryFlag(country),
-                onTap: () => context.push(AppRoutes.countryPicker),
+              // Globe icon → country picker
+              IconButton(
+                icon: const Icon(Icons.language, color: DaysoffColors.brandTeal),
+                onPressed: () => context.push(AppRoutes.countryPicker),
+                padding: EdgeInsets.zero,
+                constraints: const BoxConstraints(),
+              ),
+              const SizedBox(width: 4),
+              // "daysoff" wordmark
+              const Text(
+                'daysoff',
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.w800,
+                  color: DaysoffColors.brandTeal,
+                  letterSpacing: -0.5,
+                ),
               ),
               const SizedBox(width: 12),
+              // Year stepper
               _YearStepper(year: year),
             ],
           ),
           actions: [
-            IconButton(
-              key: const Key('toggle-list'),
-              icon: Icon(Icons.view_agenda_outlined,
-                  color: view == HolidaysView.list
-                      ? DaysoffColors.brandTeal
-                      : DaysoffColors.neutral500),
-              onPressed: () =>
-                  ref.read(holidaysViewProvider.notifier).state = HolidaysView.list,
-            ),
-            IconButton(
-              key: const Key('toggle-calendar'),
-              icon: Icon(Icons.calendar_month_outlined,
-                  color: view == HolidaysView.calendar
-                      ? DaysoffColors.brandTeal
-                      : DaysoffColors.neutral500),
-              onPressed: () =>
-                  ref.read(holidaysViewProvider.notifier).state = HolidaysView.calendar,
-            ),
+            // Single toggle: shows calendar_today in list view, view_agenda in calendar view
+            if (view == HolidaysView.list)
+              IconButton(
+                key: const Key('toggle-calendar'),
+                icon: const Icon(Icons.calendar_today,
+                    color: DaysoffColors.brandTeal),
+                onPressed: () =>
+                    ref.read(holidaysViewProvider.notifier).state =
+                        HolidaysView.calendar,
+              )
+            else
+              IconButton(
+                key: const Key('toggle-list'),
+                icon: const Icon(Icons.view_agenda_outlined,
+                    color: DaysoffColors.brandTeal),
+                onPressed: () =>
+                    ref.read(holidaysViewProvider.notifier).state =
+                        HolidaysView.list,
+              ),
+            // Bookmark → saved
             IconButton(
               icon: const Icon(Icons.bookmark_border),
               onPressed: () => context.push(AppRoutes.saved),
@@ -147,41 +170,6 @@ class _HolidaysList extends ConsumerWidget {
   }
 }
 
-class _TappableCountryChip extends StatelessWidget {
-  const _TappableCountryChip({
-    required this.code,
-    required this.flag,
-    required this.onTap,
-  });
-  final String code;
-  final String flag;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(20),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-        decoration: BoxDecoration(
-          color: DaysoffColors.cream,
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: DaysoffColors.neutral300, width: 1),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(flag, style: const TextStyle(fontSize: 16)),
-            const SizedBox(width: 6),
-            Text(code, style: const TextStyle(fontWeight: FontWeight.w600)),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
 class _YearStepper extends ConsumerWidget {
   const _YearStepper({required this.year});
   final int year;
@@ -201,7 +189,11 @@ class _YearStepper extends ConsumerWidget {
         ),
         Text(
           '$year',
-          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+          style: const TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+            color: DaysoffColors.brandTeal,
+          ),
         ),
         IconButton(
           icon: const Icon(Icons.chevron_right),

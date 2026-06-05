@@ -33,9 +33,9 @@ void main() {
   testWidgets('Friday holiday is free by default, absorbed when Fri is a day off',
       (tester) async {
     await _pump(tester);
-    expect(find.text('free'), findsOneWidget);
+    expect(find.text('Free'), findsOneWidget);
 
     await _pump(tester, weekend: const ['fri']);
-    expect(find.text('absorbed'), findsOneWidget);
+    expect(find.text('Absorbed'), findsOneWidget);
   });
 }
