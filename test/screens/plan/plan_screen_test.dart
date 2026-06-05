@@ -37,12 +37,22 @@ PlanResponse _resp() => PlanResponse(
       },
     );
 
+// The query the screen builds using provider defaults:
+// budget=15, minLength=3, maxLength=10, workweek=['sat','sun']
+const _kQuery = PlanQuery(
+  country: 'KR',
+  year: 2026,
+  budget: 15,
+  minLength: 3,
+  maxLength: 10,
+  workweek: ['sat', 'sun'],
+);
+
 void main() {
   testWidgets('renders one BreakCard per length, ascending', (tester) async {
     await tester.pumpWidget(ProviderScope(
       overrides: [
-        planProvider(const PlanQuery(country: 'KR', year: 2026, budget: 15))
-            .overrideWith((ref) async => _resp()),
+        planProvider(_kQuery).overrideWith((ref) async => _resp()),
       ],
       child: const MaterialApp(home: PlanScreen()),
     ));
@@ -55,7 +65,7 @@ void main() {
   testWidgets('error state shows Retry', (tester) async {
     await tester.pumpWidget(ProviderScope(
       overrides: [
-        planProvider(const PlanQuery(country: 'KR', year: 2026, budget: 15))
+        planProvider(_kQuery)
             .overrideWith((ref) async => throw Exception('boom')),
       ],
       child: const MaterialApp(home: PlanScreen()),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../api/models/sandwiches_response.dart';
+import '../../providers/preferences_provider.dart';
 import '../../providers/sandwiches_provider.dart';
 import '../../providers/selection_provider.dart';
 import '../../theme/colors.dart';
@@ -14,7 +15,8 @@ class SandwichScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final country = ref.watch(selectedCountryProvider);
     final year = ref.watch(selectedYearProvider);
-    final query = SandwichesQuery(country: country, year: year);
+    final weekend = ref.watch(weekendProvider);
+    final query = SandwichesQuery(country: country, year: year, workweek: weekend);
     final async = ref.watch(sandwichesProvider(query));
     return Scaffold(
       appBar: AppBar(title: const Text('Sandwich days')),

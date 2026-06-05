@@ -51,6 +51,7 @@ class ApiClient {
     int budget = 15,
     int minLength = 3,
     int maxLength = 10,
+    List<String>? workweek,
   }) async {
     final response = await _dio.get<Map<String, dynamic>>(
       Endpoints.plan,
@@ -60,6 +61,7 @@ class ApiClient {
         'budget': budget,
         'min_length': minLength,
         'max_length': maxLength,
+        if (workweek != null && workweek.isNotEmpty) 'workweek': workweek.join(','),
       },
     );
     return PlanResponse.fromJson(response.data!);
