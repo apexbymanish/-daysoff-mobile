@@ -301,7 +301,9 @@ class _BuffetState extends State<_Buffet> {
     super.initState();
     _trips = _bestPerLength(widget.response);
     _best = bestValueTrip(_trips);
-    _initialPage = _best != null ? _trips.indexOf(_best) : 0;
+    // Open on the first (longest) option; the best-value badge still marks
+    // whichever option is the best value, wherever it sits.
+    _initialPage = 0;
     _currentPage = _initialPage;
     _pageController =
         PageController(viewportFraction: 0.85, initialPage: _initialPage);
@@ -314,16 +316,20 @@ class _BuffetState extends State<_Buffet> {
   }
 
   /// Best (first) trip of each length, ordered by ascending length.
+  /// The best break for each length, sorted **longest-first**, capped at the
+  /// top 8 options.
   static List<PlanTrip> _bestPerLength(PlanResponse response) {
-    final lengths = response.resultsByLength.keys
-        .map(int.parse)
-        .toList()
-      ..sort();
-    return [
-      for (final len in lengths)
-        if (response.resultsByLength['$len']!.isNotEmpty)
-          response.resultsByLength['$len']!.first,
-    ];
+    final best = [
+      for (final list in response.resultsByLength.values)
+        if (list.isNotEmpty) list.first,
+    ]..sort((a, b) {
+        final byLength = b.breakLength.compareTo(a.breakLength); // longest first
+        if (byLength != 0) return byLength;
+        final byPto = a.ptoCost.compareTo(b.ptoCost); // then fewer PTO
+        if (byPto != 0) return byPto;
+        return a.breakStart.compareTo(b.breakStart); // then earliest
+      });
+    return best.take(8).toList();
   }
 
   @override
