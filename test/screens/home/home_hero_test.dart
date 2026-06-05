@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:daysoff_mobile/api/api_client.dart';
 import 'package:daysoff_mobile/api/models/holiday.dart';
 import 'package:daysoff_mobile/api/models/holidays_response.dart';
+import 'package:daysoff_mobile/api/models/plan_response.dart';
 import 'package:daysoff_mobile/providers/api_provider.dart';
 import 'package:daysoff_mobile/screens/home/home_screen.dart';
 import 'package:daysoff_mobile/screens/home/widgets/next_break_hero.dart';
@@ -27,6 +28,17 @@ class _FakeApiClient extends ApiClient {
           ),
         ],
       );
+
+  @override
+  Future<PlanResponse> getPlan({
+    required String country,
+    required int year,
+    int budget = 15,
+    int minLength = 3,
+    int maxLength = 10,
+    List<String>? workweek,
+  }) async =>
+      throw Exception('no plan in test');
 }
 
 void main() {

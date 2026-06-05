@@ -4,9 +4,13 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:daysoff_mobile/api/api_client.dart';
 import 'package:daysoff_mobile/api/models/holiday.dart';
 import 'package:daysoff_mobile/api/models/holidays_response.dart';
+import 'package:daysoff_mobile/api/models/plan_response.dart';
 import 'package:daysoff_mobile/providers/api_provider.dart';
 import 'package:daysoff_mobile/screens/home/home_screen.dart';
 
+// Holiday is future-dated (Christmas Day 2026) so it remains in the windowed
+// list (today..cap). Date changed from DateTime(2026, 1, 1) — which is past —
+// to DateTime(2026, 12, 25) so the window filter introduced in T2 still shows it.
 class _FakeApiClient extends ApiClient {
   @override
   Future<HolidaysResponse> getHolidays({
@@ -19,9 +23,25 @@ class _FakeApiClient extends ApiClient {
         year: 2026,
         count: 1,
         holidays: [
-          Holiday(date: DateTime(2026, 1, 1), name: "New Year's Day", source: 'library'),
+          // Was DateTime(2026,1,1) — past date. Updated to future so the
+          // windowed list still contains it.
+          Holiday(
+              date: DateTime(2026, 12, 25),
+              name: 'Christmas Day',
+              source: 'library'),
         ],
       );
+
+  @override
+  Future<PlanResponse> getPlan({
+    required String country,
+    required int year,
+    int budget = 15,
+    int minLength = 3,
+    int maxLength = 10,
+    List<String>? workweek,
+  }) async =>
+      throw Exception('no plan in test');
 }
 
 void main() {
@@ -30,9 +50,11 @@ void main() {
       overrides: [apiClientProvider.overrideWithValue(_FakeApiClient())],
       child: const MaterialApp(home: HomeScreen()),
     ));
-    await tester.pumpAndSettle();
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 50));
 
-    expect(find.text("New Year's Day"), findsOneWidget);
+    // Holiday shows in hero + card (both are expected in list view).
+    expect(find.text('Christmas Day'), findsWidgets);
     expect(find.byKey(const Key('holiday-calendar')), findsNothing);
 
     await tester.tap(find.byKey(const Key('toggle-calendar')));
@@ -40,8 +62,10 @@ void main() {
     expect(find.byKey(const Key('holiday-calendar')), findsOneWidget);
 
     await tester.tap(find.byKey(const Key('toggle-list')));
-    await tester.pumpAndSettle();
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 50));
     expect(find.byKey(const Key('holiday-calendar')), findsNothing);
-    expect(find.text("New Year's Day"), findsOneWidget);
+    // Holiday visible again in list view (hero + card).
+    expect(find.text('Christmas Day'), findsWidgets);
   });
 }

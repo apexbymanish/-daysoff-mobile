@@ -3,8 +3,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../api/models/holiday.dart';
+import '../../api/models/plan_trip.dart';
 import '../../providers/holidays_provider.dart';
 import '../../providers/holidays_view_provider.dart';
+import '../../providers/plan_provider.dart';
+import '../../providers/preferences_provider.dart';
 import '../../providers/selection_provider.dart';
 import '../../router/app_router.dart';
 import '../../theme/colors.dart';
@@ -64,12 +67,45 @@ class _HolidaysList extends ConsumerWidget {
     }
 
     final now = DateTime.now();
+    final lower = DateTime(now.year, now.month, now.day);
+
     final upcoming =
-        holidays.where((h) => !h.date.isBefore(DateTime(now.year, now.month, now.day))).toList()
+        holidays.where((h) => !h.date.isBefore(lower)).toList()
           ..sort((a, b) => a.date.compareTo(b.date));
 
+    // Watch the plan to compute the longest-break cap.
+    final budget = ref.watch(ptoBudgetProvider);
+    final lenRange = ref.watch(breakLengthProvider);
+    final weekend = ref.watch(weekendProvider);
+    final planAsync = ref.watch(planProvider(PlanQuery(
+      country: country,
+      year: year,
+      budget: budget,
+      minLength: lenRange.min,
+      maxLength: lenRange.max,
+      workweek: weekend,
+    )));
+
+    DateTime cap = DateTime(year, 12, 31);
+    planAsync.whenData((resp) {
+      PlanTrip? longest;
+      for (final list in resp.resultsByLength.values) {
+        for (final t in list) {
+          if (longest == null || t.breakLength > longest.breakLength) {
+            longest = t;
+          }
+        }
+      }
+      if (longest != null) cap = longest.breakEnd;
+    });
+
+    // Window the list to [today .. cap] for the month sections.
+    final windowed = holidays
+        .where((h) => !h.date.isBefore(lower) && !h.date.isAfter(cap))
+        .toList();
+
     final byMonth = <int, List<Holiday>>{};
-    for (final h in holidays) {
+    for (final h in windowed) {
       byMonth.putIfAbsent(h.date.month, () => []).add(h);
     }
     final months = byMonth.keys.toList()..sort();
@@ -131,9 +167,11 @@ class _HolidaysList extends ConsumerWidget {
                 key: const Key('toggle-list'),
                 icon: const Icon(Icons.view_agenda_outlined,
                     color: DaysoffColors.brandTeal),
-                onPressed: () =>
-                    ref.read(holidaysViewProvider.notifier).state =
-                        HolidaysView.list,
+                onPressed: () {
+                  ref.read(calendarFocusProvider.notifier).state = null;
+                  ref.read(holidaysViewProvider.notifier).state =
+                      HolidaysView.list;
+                },
               ),
             // Bookmark → saved
             IconButton(
@@ -156,14 +194,26 @@ class _HolidaysList extends ConsumerWidget {
                     context, upcoming.first.date, [upcoming.first], null),
               ),
             ),
-          for (final month in months) ...[
-            SliverToBoxAdapter(child: MonthSection(month: month)),
-            SliverList.builder(
-              itemCount: byMonth[month]!.length,
-              itemBuilder: (context, index) =>
-                  HolidayCard(holiday: byMonth[month]![index]),
-            ),
-          ],
+          if (windowed.isEmpty)
+            const SliverToBoxAdapter(child: _NoUpcomingState())
+          else
+            for (final month in months) ...[
+              SliverToBoxAdapter(child: MonthSection(month: month)),
+              SliverList.builder(
+                itemCount: byMonth[month]!.length,
+                itemBuilder: (context, index) {
+                  final h = byMonth[month]![index];
+                  return HolidayCard(
+                    holiday: h,
+                    onTap: () {
+                      ref.read(calendarFocusProvider.notifier).state = h.date;
+                      ref.read(holidaysViewProvider.notifier).state =
+                          HolidaysView.calendar;
+                    },
+                  );
+                },
+              ),
+            ],
         ],
         const SliverToBoxAdapter(child: SizedBox(height: 32)),
       ],
@@ -205,6 +255,21 @@ class _YearStepper extends ConsumerWidget {
           constraints: const BoxConstraints(),
         ),
       ],
+    );
+  }
+}
+
+class _NoUpcomingState extends StatelessWidget {
+  const _NoUpcomingState();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Padding(
+      padding: EdgeInsets.all(32),
+      child: Text(
+        'No upcoming holidays.',
+        style: TextStyle(fontSize: 16, color: DaysoffColors.neutral700),
+      ),
     );
   }
 }
