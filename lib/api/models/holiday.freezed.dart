@@ -23,6 +23,8 @@ Holiday _$HolidayFromJson(Map<String, dynamic> json) {
 mixin _$Holiday {
   DateTime get date => throw _privateConstructorUsedError;
   String get name => throw _privateConstructorUsedError;
+  @JsonKey(name: 'name_local')
+  String? get nameLocal => throw _privateConstructorUsedError;
   String get source => throw _privateConstructorUsedError;
 
   /// Serializes this Holiday to a JSON map.
@@ -39,7 +41,12 @@ abstract class $HolidayCopyWith<$Res> {
   factory $HolidayCopyWith(Holiday value, $Res Function(Holiday) then) =
       _$HolidayCopyWithImpl<$Res, Holiday>;
   @useResult
-  $Res call({DateTime date, String name, String source});
+  $Res call({
+    DateTime date,
+    String name,
+    @JsonKey(name: 'name_local') String? nameLocal,
+    String source,
+  });
 }
 
 /// @nodoc
@@ -56,7 +63,12 @@ class _$HolidayCopyWithImpl<$Res, $Val extends Holiday>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? date = null, Object? name = null, Object? source = null}) {
+  $Res call({
+    Object? date = null,
+    Object? name = null,
+    Object? nameLocal = freezed,
+    Object? source = null,
+  }) {
     return _then(
       _value.copyWith(
             date: null == date
@@ -67,6 +79,10 @@ class _$HolidayCopyWithImpl<$Res, $Val extends Holiday>
                 ? _value.name
                 : name // ignore: cast_nullable_to_non_nullable
                       as String,
+            nameLocal: freezed == nameLocal
+                ? _value.nameLocal
+                : nameLocal // ignore: cast_nullable_to_non_nullable
+                      as String?,
             source: null == source
                 ? _value.source
                 : source // ignore: cast_nullable_to_non_nullable
@@ -85,7 +101,12 @@ abstract class _$$HolidayImplCopyWith<$Res> implements $HolidayCopyWith<$Res> {
   ) = __$$HolidayImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({DateTime date, String name, String source});
+  $Res call({
+    DateTime date,
+    String name,
+    @JsonKey(name: 'name_local') String? nameLocal,
+    String source,
+  });
 }
 
 /// @nodoc
@@ -101,7 +122,12 @@ class __$$HolidayImplCopyWithImpl<$Res>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? date = null, Object? name = null, Object? source = null}) {
+  $Res call({
+    Object? date = null,
+    Object? name = null,
+    Object? nameLocal = freezed,
+    Object? source = null,
+  }) {
     return _then(
       _$HolidayImpl(
         date: null == date
@@ -112,6 +138,10 @@ class __$$HolidayImplCopyWithImpl<$Res>
             ? _value.name
             : name // ignore: cast_nullable_to_non_nullable
                   as String,
+        nameLocal: freezed == nameLocal
+            ? _value.nameLocal
+            : nameLocal // ignore: cast_nullable_to_non_nullable
+                  as String?,
         source: null == source
             ? _value.source
             : source // ignore: cast_nullable_to_non_nullable
@@ -127,6 +157,7 @@ class _$HolidayImpl implements _Holiday {
   const _$HolidayImpl({
     required this.date,
     required this.name,
+    @JsonKey(name: 'name_local') this.nameLocal,
     required this.source,
   });
 
@@ -138,11 +169,14 @@ class _$HolidayImpl implements _Holiday {
   @override
   final String name;
   @override
+  @JsonKey(name: 'name_local')
+  final String? nameLocal;
+  @override
   final String source;
 
   @override
   String toString() {
-    return 'Holiday(date: $date, name: $name, source: $source)';
+    return 'Holiday(date: $date, name: $name, nameLocal: $nameLocal, source: $source)';
   }
 
   @override
@@ -152,12 +186,14 @@ class _$HolidayImpl implements _Holiday {
             other is _$HolidayImpl &&
             (identical(other.date, date) || other.date == date) &&
             (identical(other.name, name) || other.name == name) &&
+            (identical(other.nameLocal, nameLocal) ||
+                other.nameLocal == nameLocal) &&
             (identical(other.source, source) || other.source == source));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, date, name, source);
+  int get hashCode => Object.hash(runtimeType, date, name, nameLocal, source);
 
   /// Create a copy of Holiday
   /// with the given fields replaced by the non-null parameter values.
@@ -177,6 +213,7 @@ abstract class _Holiday implements Holiday {
   const factory _Holiday({
     required final DateTime date,
     required final String name,
+    @JsonKey(name: 'name_local') final String? nameLocal,
     required final String source,
   }) = _$HolidayImpl;
 
@@ -186,6 +223,9 @@ abstract class _Holiday implements Holiday {
   DateTime get date;
   @override
   String get name;
+  @override
+  @JsonKey(name: 'name_local')
+  String? get nameLocal;
   @override
   String get source;
 

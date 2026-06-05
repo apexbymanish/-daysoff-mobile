@@ -9,6 +9,7 @@ class Holiday with _$Holiday {
   const factory Holiday({
     required DateTime date,
     required String name,
+    @JsonKey(name: 'name_local') String? nameLocal,
     required String source,
   }) = _Holiday;
 
