@@ -9,9 +9,11 @@ import '../../providers/preferences_provider.dart';
 import '../../providers/selection_provider.dart';
 import '../../widgets/preferences_editor_sheet.dart';
 import '../../router/app_router.dart';
-import '../../core/country_flag.dart';
 import '../../theme/colors.dart';
+import '../../core/plan_value.dart';
 import 'widgets/break_card.dart';
+import 'widgets/plan_filter_chips.dart';
+import 'widgets/best_value_banner.dart';
 
 class PlanScreen extends ConsumerWidget {
   const PlanScreen({super.key});
@@ -84,16 +86,12 @@ class _Buffet extends StatelessWidget {
         ),
       );
     }
+    final best = bestValueTrip(trips);
     return ListView(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
       children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8),
-          child: Text(
-            '${countryFlag(response.country)} ${response.country} · ${response.year} · budget ${response.budget} days',
-            style: const TextStyle(fontSize: 13, color: DaysoffColors.neutral700),
-          ),
-        ),
+        const PlanFilterChips(),
+        if (best != null) BestValueBanner(trip: best),
         for (final t in trips)
           BreakCard(
             trip: t,

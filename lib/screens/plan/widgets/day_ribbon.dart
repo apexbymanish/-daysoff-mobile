@@ -3,17 +3,17 @@ import '../../../api/models/plan_trip.dart';
 import '../../../core/break_days.dart';
 import '../../../theme/colors.dart';
 
-/// A horizontal strip of colored blocks, one per day of the break.
-/// Within a break every day is off — classify as PTO, weekend, or holiday
-/// (a day that is neither PTO nor weekend must be the anchoring holiday).
+/// A row of small letter pills, one per break day: P (PTO), W (weekend),
+/// H (the anchoring holiday).
 class DayRibbon extends StatelessWidget {
   const DayRibbon({super.key, required this.trip});
   final PlanTrip trip;
 
-  Color _colorFor(DateTime day) => switch (classifyBreakDay(day, trip.ptoDates)) {
-        BreakDayKind.pto => DaysoffColors.sage,
-        BreakDayKind.weekend => DaysoffColors.brandTeal,
-        BreakDayKind.holiday => DaysoffColors.peach,
+  ({String label, Color color}) _pill(DateTime day) =>
+      switch (classifyBreakDay(day, trip.ptoDates)) {
+        BreakDayKind.pto => (label: 'P', color: DaysoffColors.sage),
+        BreakDayKind.weekend => (label: 'W', color: DaysoffColors.brandTeal),
+        BreakDayKind.holiday => (label: 'H', color: DaysoffColors.peach),
       };
 
   @override
@@ -24,22 +24,30 @@ class DayRibbon extends StatelessWidget {
         d = d.add(const Duration(days: 1))) {
       days.add(d);
     }
-    return SizedBox(
-      height: 10,
-      child: Row(
-        children: [
-          for (final d in days)
-            Expanded(
-              child: Container(
-                margin: const EdgeInsets.symmetric(horizontal: 1),
+    return Row(
+      children: [
+        for (final d in days)
+          Padding(
+            padding: const EdgeInsets.only(right: 6),
+            child: Builder(builder: (_) {
+              final p = _pill(d);
+              return Container(
+                width: 26,
+                height: 26,
+                alignment: Alignment.center,
                 decoration: BoxDecoration(
-                  color: _colorFor(d),
-                  borderRadius: BorderRadius.circular(2),
+                  color: p.color.withValues(alpha: 0.35),
+                  borderRadius: BorderRadius.circular(8),
                 ),
-              ),
-            ),
-        ],
-      ),
+                child: Text(p.label,
+                    style: const TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: DaysoffColors.neutral900)),
+              );
+            }),
+          ),
+      ],
     );
   }
 }
