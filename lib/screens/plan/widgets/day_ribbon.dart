@@ -3,17 +3,29 @@ import '../../../api/models/plan_trip.dart';
 import '../../../core/break_days.dart';
 import '../../../theme/colors.dart';
 
-/// A row of small letter pills, one per break day: P (PTO), W (weekend),
-/// H (the anchoring holiday).
+/// A row of large ribbon blocks, one per break day.
+/// H (holiday) = indigo, P (PTO) = olive, W (weekend) = gray.
 class DayRibbon extends StatelessWidget {
   const DayRibbon({super.key, required this.trip});
   final PlanTrip trip;
 
-  ({String label, Color color}) _pill(DateTime day) =>
+  ({String label, Color bg, Color fg}) _block(DateTime day) =>
       switch (classifyBreakDay(day, trip.ptoDates)) {
-        BreakDayKind.pto => (label: 'P', color: DaysoffColors.sage),
-        BreakDayKind.weekend => (label: 'W', color: DaysoffColors.brandTeal),
-        BreakDayKind.holiday => (label: 'H', color: DaysoffColors.peach),
+        BreakDayKind.holiday => (
+            label: 'H',
+            bg: DaysoffColors.indigoContainer.withValues(alpha: 0.35),
+            fg: DaysoffColors.indigo,
+          ),
+        BreakDayKind.pto => (
+            label: 'P',
+            bg: DaysoffColors.oliveFixed,
+            fg: DaysoffColors.olive,
+          ),
+        BreakDayKind.weekend => (
+            label: 'W',
+            bg: DaysoffColors.surfaceContainerHigh,
+            fg: DaysoffColors.neutral700,
+          ),
       };
 
   @override
@@ -26,27 +38,30 @@ class DayRibbon extends StatelessWidget {
     }
     return Row(
       children: [
-        for (final d in days)
-          Padding(
-            padding: const EdgeInsets.only(right: 6),
+        for (var i = 0; i < days.length; i++) ...[
+          if (i > 0) const SizedBox(width: 6),
+          Expanded(
             child: Builder(builder: (_) {
-              final p = _pill(d);
+              final b = _block(days[i]);
               return Container(
-                width: 26,
-                height: 26,
+                height: 40,
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
-                  color: p.color.withValues(alpha: 0.35),
+                  color: b.bg,
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: Text(p.label,
-                    style: const TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                        color: DaysoffColors.neutral900)),
+                child: Text(
+                  b.label,
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                    color: b.fg,
+                  ),
+                ),
               );
             }),
           ),
+        ],
       ],
     );
   }

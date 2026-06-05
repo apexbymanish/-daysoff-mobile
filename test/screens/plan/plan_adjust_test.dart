@@ -29,13 +29,14 @@ class _FakeApiClient extends ApiClient {
 }
 
 void main() {
-  testWidgets('Adjust button opens the preferences editor', (tester) async {
+  testWidgets('Adjust icon button opens the preferences editor', (tester) async {
+    // The app bar Adjust text button was replaced with an edit icon button.
     await tester.pumpWidget(ProviderScope(
       overrides: [apiClientProvider.overrideWithValue(_FakeApiClient())],
       child: const MaterialApp(home: PlanScreen()),
     ));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Adjust'));
+    await tester.tap(find.byIcon(Icons.edit_outlined));
     await tester.pumpAndSettle();
     expect(find.byType(PreferencesEditorSheet), findsOneWidget);
   });

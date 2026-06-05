@@ -40,4 +40,14 @@ class DaysoffColors {
 
   // Regional accent — Korea-red, for holiday tags (matches Stitch 6.x).
   static const Color koreaRed = Color(0xFFCD2E3A);
+
+  // Plan (6.6) accents — indigo = holiday blocks, olive = PTO blocks.
+  static const Color indigo = Color(0xFF4858AB); // secondary
+  static const Color indigoContainer = Color(0xFF96A5FF); // secondary-container
+  static const Color olive = Color(0xFF2B3218); // tertiary
+  static const Color oliveFixed = Color(0xFFDEE7C0); // tertiary-fixed
+  static const Color redContainer = Color(0xFFFFDAD6); // error-container
+  static const Color onRedContainer = Color(0xFF93000A); // on-error-container
+  static const Color surfaceContainerHigh = Color(0xFFE7E8E8);
+  static const Color surfaceContainerLow = Color(0xFFF3F4F3);
 }
