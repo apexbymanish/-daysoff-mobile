@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 
 import '../../../api/models/holiday.dart';
 import '../../../theme/colors.dart';
+import '../../../theme/typography.dart';
 import 'scenery.dart';
 
 /// Scenery "next break" hero card for the top of the Holidays list.
@@ -72,13 +73,13 @@ class NextBreakHero extends StatelessWidget {
                       mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
+                        Text(
                           'NEXT BREAK IN',
-                          style: TextStyle(
-                            color: Colors.white70,
+                          style: labelCaps(
                             fontSize: 10,
+                            color: Colors.white70,
                             letterSpacing: 1.5,
-                            fontWeight: FontWeight.w500,
+                            fontWeight: FontWeight.w600,
                           ),
                         ),
                         const SizedBox(height: 2),
@@ -150,13 +151,9 @@ class NextBreakHero extends StatelessWidget {
                           ),
                         ),
                       ),
-                      child: const Text(
+                      child: Text(
                         'See details',
-                        style: TextStyle(
-                          fontSize: 11,
-                          letterSpacing: 0.8,
-                          fontWeight: FontWeight.w500,
-                        ),
+                        style: labelCaps(fontSize: 11, color: Colors.white),
                       ),
                     ),
                 ],

@@ -6,6 +6,7 @@ import '../../../api/models/holiday.dart';
 import '../../../core/holiday_status.dart';
 import '../../../providers/preferences_provider.dart';
 import '../../../theme/colors.dart';
+import '../../../theme/typography.dart';
 
 /// A single holiday card in the home timeline.
 /// White, outline-variant bordered, rounded-16 container with internal padding.
@@ -59,11 +60,10 @@ class HolidayCard extends ConsumerWidget {
                   const SizedBox(height: 2),
                   Text(
                     dowFmt.format(holiday.date).toUpperCase(),
-                    style: const TextStyle(
+                    style: labelCaps(
                       fontSize: 10,
                       color: DaysoffColors.neutral700,
                       letterSpacing: 0.8,
-                      fontWeight: FontWeight.w500,
                     ),
                   ),
                 ],
@@ -136,11 +136,10 @@ class _StatusPill extends StatelessWidget {
             const SizedBox(width: 4),
             Text(
               'Absorbed',
-              style: TextStyle(
+              style: labelCaps(
                 fontSize: 10,
-                fontWeight: FontWeight.w500,
-                letterSpacing: 0.8,
                 color: DaysoffColors.neutral700.withValues(alpha: 0.6),
+                fontWeight: FontWeight.w700,
               ),
             ),
           ],
@@ -153,22 +152,21 @@ class _StatusPill extends StatelessWidget {
           color: DaysoffColors.brandTeal.withValues(alpha: 0.10),
           borderRadius: BorderRadius.circular(999),
         ),
-        child: const Row(
+        child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(
+            const Icon(
               Icons.wb_sunny,
               size: 14,
               color: DaysoffColors.brandTeal,
             ),
-            SizedBox(width: 4),
+            const SizedBox(width: 4),
             Text(
               'Free',
-              style: TextStyle(
+              style: labelCaps(
                 fontSize: 10,
-                fontWeight: FontWeight.w700,
-                letterSpacing: 0.8,
                 color: DaysoffColors.brandTeal,
+                fontWeight: FontWeight.w700,
               ),
             ),
           ],

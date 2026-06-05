@@ -10,6 +10,7 @@ import '../../providers/holidays_provider.dart';
 import '../../providers/saved_breaks_provider.dart';
 import '../../providers/selection_provider.dart';
 import '../../theme/colors.dart';
+import '../../theme/typography.dart';
 import '../home/widgets/scenery.dart';
 
 const _kSage = Color(0xFF8E9775);
@@ -190,11 +191,9 @@ class BreakDetailScreen extends ConsumerWidget {
                                 ),
                                 child: Text(
                                   '${trip.ptoCost} PTO',
-                                  style: const TextStyle(
-                                    color: Colors.white,
+                                  style: labelCaps(
                                     fontSize: 10,
-                                    fontWeight: FontWeight.w500,
-                                    letterSpacing: 0.8,
+                                    color: Colors.white,
                                   ),
                                 ),
                               ),
@@ -237,12 +236,11 @@ class BreakDetailScreen extends ConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // DAY-BY-DAY header
-                  const Text(
+                  Text(
                     'DAY-BY-DAY',
-                    style: TextStyle(
-                      color: DaysoffColors.neutral500,
+                    style: labelCaps(
                       fontSize: 12,
-                      fontWeight: FontWeight.w500,
+                      color: DaysoffColors.outlineVariant,
                       letterSpacing: 1.0,
                     ),
                   ),
@@ -302,7 +300,7 @@ class BreakDetailScreen extends ConsumerWidget {
                               const Text(
                                 'Maximize your time with public holidays',
                                 style: TextStyle(
-                                  color: DaysoffColors.neutral500,
+                                  color: DaysoffColors.outlineVariant,
                                   fontSize: 12,
                                 ),
                               ),
@@ -393,10 +391,9 @@ class _DayRow extends StatelessWidget {
                 const SizedBox(height: 2),
                 Text(
                   overline,
-                  style: const TextStyle(
-                    color: Color(0xFF8B9197),
+                  style: labelCaps(
                     fontSize: 11,
-                    fontWeight: FontWeight.w500,
+                    color: DaysoffColors.outlineVariant,
                     letterSpacing: 0.8,
                   ),
                 ),
@@ -425,10 +422,9 @@ class _DayRow extends StatelessWidget {
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 softWrap: false,
-                style: const TextStyle(
-                  color: _kWarmCream,
+                style: labelCaps(
                   fontSize: 11,
-                  fontWeight: FontWeight.w500,
+                  color: _kWarmCream,
                   letterSpacing: 0.8,
                 ),
               ),
