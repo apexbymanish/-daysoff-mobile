@@ -7,9 +7,9 @@ import '../../../core/holiday_status.dart';
 import '../../../providers/preferences_provider.dart';
 import '../../../theme/colors.dart';
 
-/// A single holiday row in the home timeline: date stack, the holiday name
-/// (with its native-language name beneath when available), and a free/absorbed
-/// badge based on the user's weekend.
+/// A single holiday card in the home timeline.
+/// White, outline-variant bordered, rounded-16 container with internal padding.
+/// Row: date numeral (teal) + weekday | holiday name + native subtitle | status pill.
 class HolidayCard extends ConsumerWidget {
   const HolidayCard({super.key, required this.holiday});
 
@@ -25,86 +25,155 @@ class HolidayCard extends ConsumerWidget {
         holiday.nameLocal != null && holiday.nameLocal != holiday.name;
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
-      decoration: const BoxDecoration(
-        border: Border(
-          bottom: BorderSide(color: DaysoffColors.neutral100, width: 1),
+      margin: const EdgeInsets.fromLTRB(20, 0, 20, 12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: const Color(0xFFC0C8C8), // outline-variant
+          width: 1,
         ),
       ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          SizedBox(
-            width: 56,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  dayFmt.format(holiday.date),
-                  style: const TextStyle(
-                      fontSize: 26, fontWeight: FontWeight.w600, height: 1.0),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  dowFmt.format(holiday.date).toUpperCase(),
-                  style: const TextStyle(
-                      fontSize: 11,
-                      color: DaysoffColors.neutral500,
-                      letterSpacing: 0.8),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  holiday.name,
-                  style: const TextStyle(
-                      fontSize: 15, fontWeight: FontWeight.w500),
-                ),
-                if (hasLocal) ...[
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            // Date column: numeral + weekday
+            SizedBox(
+              width: 56,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    dayFmt.format(holiday.date),
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.w800,
+                      height: 1.0,
+                      color: absorbed
+                          ? DaysoffColors.neutral700.withValues(alpha: 0.5)
+                          : DaysoffColors.brandTeal,
+                    ),
+                  ),
                   const SizedBox(height: 2),
                   Text(
-                    holiday.nameLocal!,
+                    dowFmt.format(holiday.date).toUpperCase(),
                     style: const TextStyle(
-                        fontSize: 12, color: DaysoffColors.neutral500),
+                      fontSize: 10,
+                      color: DaysoffColors.neutral700,
+                      letterSpacing: 0.8,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
                 ],
-              ],
+              ),
             ),
-          ),
-          _StatusBadge(absorbed: absorbed),
-        ],
+            // Left divider
+            Container(
+              width: 1,
+              height: 40,
+              margin: const EdgeInsets.symmetric(horizontal: 12),
+              color: const Color(0xFFC0C8C8).withValues(alpha: 0.5),
+            ),
+            // Name + native subtitle
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    holiday.name,
+                    style: const TextStyle(
+                      fontSize: 17,
+                      fontWeight: FontWeight.w600,
+                      color: DaysoffColors.neutral900,
+                    ),
+                  ),
+                  if (hasLocal) ...[
+                    const SizedBox(height: 2),
+                    Text(
+                      holiday.nameLocal!,
+                      style: const TextStyle(
+                        fontSize: 14,
+                        color: DaysoffColors.neutral700,
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+            const SizedBox(width: 8),
+            // Status pill
+            _StatusPill(absorbed: absorbed),
+          ],
+        ),
       ),
     );
   }
 }
 
-class _StatusBadge extends StatelessWidget {
-  const _StatusBadge({required this.absorbed});
+class _StatusPill extends StatelessWidget {
+  const _StatusPill({required this.absorbed});
   final bool absorbed;
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Icon(
-          absorbed ? Icons.nightlight_round : Icons.wb_sunny_outlined,
-          size: 14,
-          color: absorbed ? DaysoffColors.neutral500 : DaysoffColors.peachDark,
+    if (absorbed) {
+      return Container(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        decoration: BoxDecoration(
+          color: const Color(0xFFE7E8E8),
+          borderRadius: BorderRadius.circular(999),
         ),
-        const SizedBox(width: 4),
-        Text(
-          absorbed ? 'absorbed' : 'free',
-          style: TextStyle(
-            fontSize: 11,
-            color: absorbed ? DaysoffColors.neutral500 : DaysoffColors.peachDark,
-          ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              Icons.bedtime,
+              size: 14,
+              color: DaysoffColors.neutral700.withValues(alpha: 0.6),
+            ),
+            const SizedBox(width: 4),
+            Text(
+              'Absorbed',
+              style: TextStyle(
+                fontSize: 10,
+                fontWeight: FontWeight.w500,
+                letterSpacing: 0.8,
+                color: DaysoffColors.neutral700.withValues(alpha: 0.6),
+              ),
+            ),
+          ],
         ),
-      ],
-    );
+      );
+    } else {
+      return Container(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        decoration: BoxDecoration(
+          color: DaysoffColors.brandTeal.withValues(alpha: 0.10),
+          borderRadius: BorderRadius.circular(999),
+        ),
+        child: const Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              Icons.wb_sunny,
+              size: 14,
+              color: DaysoffColors.brandTeal,
+            ),
+            SizedBox(width: 4),
+            Text(
+              'Free',
+              style: TextStyle(
+                fontSize: 10,
+                fontWeight: FontWeight.w700,
+                letterSpacing: 0.8,
+                color: DaysoffColors.brandTeal,
+              ),
+            ),
+          ],
+        ),
+      );
+    }
   }
 }

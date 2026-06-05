@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import '../../../theme/colors.dart';
 
 /// Month-group section header above a run of HolidayCards.
+/// Matches Stitch 6.1: uppercase caps label + a horizontal divider line.
 class MonthSection extends StatelessWidget {
   const MonthSection({super.key, required this.month});
 
@@ -15,19 +16,26 @@ class MonthSection extends StatelessWidget {
     final name = DateFormat('MMMM').format(DateTime(2000, month));
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 24, 20, 8),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Text(
-            name,
+            name.toUpperCase(),
             style: const TextStyle(
-              fontSize: 18,
+              fontSize: 12,
               fontWeight: FontWeight.w500,
-              color: DaysoffColors.neutral900,
+              color: DaysoffColors.neutral700,
+              letterSpacing: 1.2,
             ),
           ),
-          const SizedBox(height: 6),
-          Container(height: 1, color: DaysoffColors.neutral100),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Divider(
+              thickness: 1,
+              color: const Color(0xFFC0C8C8).withValues(alpha: 0.3),
+              height: 1,
+            ),
+          ),
         ],
       ),
     );
