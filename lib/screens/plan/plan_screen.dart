@@ -315,7 +315,6 @@ class _BuffetState extends State<_Buffet> {
     super.dispose();
   }
 
-  /// Best (first) trip of each length, ordered by ascending length.
   /// The best break for each length, sorted **longest-first**, capped at the
   /// top 8 options.
   static List<PlanTrip> _bestPerLength(PlanResponse response) {
