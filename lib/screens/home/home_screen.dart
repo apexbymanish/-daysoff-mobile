@@ -151,6 +151,7 @@ class _HolidaysList extends ConsumerWidget {
             SliverToBoxAdapter(
               child: NextBreakHero(
                 next: upcoming.first,
+                onTap: () => context.push(AppRoutes.destinations),
                 onSeeDetails: () => showDayDetailSheet(
                     context, upcoming.first.date, [upcoming.first], null),
               ),

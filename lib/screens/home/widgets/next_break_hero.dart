@@ -10,10 +10,18 @@ import 'scenery.dart';
 /// Matches the Stitch 6.1 design: 240px height, bottom-left text overlay,
 /// bottom-right translucent "See details" pill.
 class NextBreakHero extends StatelessWidget {
-  const NextBreakHero({super.key, required this.next, this.onSeeDetails});
+  const NextBreakHero({
+    super.key,
+    required this.next,
+    this.onSeeDetails,
+    this.onTap,
+  });
 
   final Holiday next;
   final VoidCallback? onSeeDetails;
+
+  /// Optional tap handler for the whole card (e.g. navigate to Destinations).
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +30,7 @@ class NextBreakHero extends StatelessWidget {
     final days = next.date.difference(today).inDays;
     final dateFmt = DateFormat('MMM d');
 
-    return Container(
+    final card = Container(
       margin: const EdgeInsets.fromLTRB(20, 16, 20, 4),
       height: 240,
       clipBehavior: Clip.antiAlias,
@@ -163,5 +171,8 @@ class NextBreakHero extends StatelessWidget {
         ],
       ),
     );
+
+    if (onTap == null) return card;
+    return GestureDetector(onTap: onTap, child: card);
   }
 }
