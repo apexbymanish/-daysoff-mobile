@@ -28,7 +28,8 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byType(MaterialApp), findsOneWidget);
-    expect(find.byType(NavigationBar), findsOneWidget);
+    // Custom 3-tab bar renders with uppercase labels.
+    expect(find.text('HOLIDAYS'), findsWidgets);
     expect(find.text('No holidays for this year.'), findsOneWidget);
   });
 }

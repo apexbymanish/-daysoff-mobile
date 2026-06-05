@@ -9,7 +9,6 @@ import '../screens/home/home_screen.dart';
 import '../screens/onboarding/onboarding_screen.dart';
 import '../screens/plan/break_detail_screen.dart';
 import '../screens/plan/plan_screen.dart';
-import '../screens/sandwich/sandwich_screen.dart';
 import '../screens/saved/saved_screen.dart';
 import '../screens/settings/settings_screen.dart';
 import 'scaffold_with_nav_bar.dart';
@@ -20,7 +19,6 @@ class AppRoutes {
   static const onboarding = '/onboarding';
   static const plan = '/plan';
   static const breakDetail = '/plan/break';
-  static const sandwich = '/sandwich';
   static const settings = '/settings';
   static const countryPicker = '/picker/country';
   static const saved = '/saved';
@@ -65,12 +63,6 @@ final appRouter = GoRouter(
                     BreakDetailScreen(trip: state.extra! as PlanTrip),
               ),
             ],
-          ),
-        ]),
-        StatefulShellBranch(routes: [
-          GoRoute(
-            path: AppRoutes.sandwich,
-            builder: (context, state) => const SandwichScreen(),
           ),
         ]),
         StatefulShellBranch(routes: [

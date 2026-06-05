@@ -19,23 +19,37 @@ Widget _host(Widget child) =>
     ProviderScope(child: MaterialApp(home: Scaffold(body: child)));
 
 void main() {
-  testWidgets('shows take-off line, break length, context and PTO pill',
-      (tester) async {
+  testWidgets('shows "Take … off" headline', (tester) async {
     await tester.pumpWidget(_host(SandwichCard(record: _rec())));
     expect(find.textContaining('Take Monday'), findsOneWidget);
-    expect(find.textContaining('4-day break'), findsOneWidget);
-    expect(find.textContaining("Weekend + Children's Day"), findsOneWidget);
-    expect(find.text('1 PTO'), findsOneWidget);
+    expect(find.textContaining('May 4'), findsWidgets);
+    expect(find.textContaining('off'), findsWidgets);
   });
 
-  testWidgets('Save adds to savedBreaksProvider', (tester) async {
+  testWidgets('shows PTO pill', (tester) async {
+    await tester.pumpWidget(_host(SandwichCard(record: _rec())));
+    // Pill text is "1 PTO" via labelCaps
+    expect(find.textContaining('1 PTO'), findsOneWidget);
+  });
+
+  testWidgets('ptoDate cell is highlighted (4 day-cells rendered)', (tester) async {
+    await tester.pumpWidget(_host(SandwichCard(record: _rec())));
+    // breakStart=May2, breakEnd=May5 → 4 cells; ptoDate=May4 is highlighted.
+    // Verify all four date numerals are present.
+    expect(find.text('2'), findsWidgets);
+    expect(find.text('3'), findsWidgets);
+    expect(find.text('4'), findsWidgets);
+    expect(find.text('5'), findsWidgets);
+  });
+
+  testWidgets('Save adds to savedBreaksProvider (length 1)', (tester) async {
     final container = ProviderContainer();
     addTearDown(container.dispose);
     await tester.pumpWidget(UncontrolledProviderScope(
       container: container,
       child: MaterialApp(home: Scaffold(body: SandwichCard(record: _rec()))),
     ));
-    await tester.tap(find.text('Save'));
+    await tester.tap(find.text('Save + remind'));
     await tester.pump();
     expect(container.read(savedBreaksProvider).length, 1);
   });

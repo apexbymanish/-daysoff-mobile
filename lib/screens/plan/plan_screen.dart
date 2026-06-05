@@ -5,13 +5,17 @@ import 'package:go_router/go_router.dart';
 import '../../api/models/plan_response.dart';
 import '../../api/models/plan_trip.dart';
 import '../../providers/plan_provider.dart';
+import '../../providers/plan_view_provider.dart';
 import '../../providers/preferences_provider.dart';
+import '../../providers/sandwiches_provider.dart';
 import '../../providers/selection_provider.dart';
 import '../../widgets/preferences_editor_sheet.dart';
 import '../../router/app_router.dart';
 import '../../theme/colors.dart';
 import '../../core/plan_value.dart';
 import '../home/widgets/scenery.dart';
+import '../sandwich/widgets/efficiency_insight.dart';
+import '../sandwich/widgets/sandwich_card.dart';
 import 'widgets/break_card.dart';
 import 'widgets/plan_filter_chips.dart';
 import 'widgets/best_value_banner.dart';
@@ -26,15 +30,8 @@ class PlanScreen extends ConsumerWidget {
     final budget = ref.watch(ptoBudgetProvider);
     final range = ref.watch(breakLengthProvider);
     final weekend = ref.watch(weekendProvider);
-    final query = PlanQuery(
-      country: country,
-      year: year,
-      budget: budget,
-      minLength: range.min,
-      maxLength: range.max,
-      workweek: weekend,
-    );
-    final planAsync = ref.watch(planProvider(query));
+    final view = ref.watch(planViewProvider);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Plan your year'),
@@ -47,16 +44,242 @@ class PlanScreen extends ConsumerWidget {
         ],
       ),
       body: SafeArea(
-        child: planAsync.when(
-          loading: () => const Center(child: CircularProgressIndicator()),
-          error: (e, _) =>
-              _PlanError(onRetry: () => ref.invalidate(planProvider(query))),
-          data: (resp) => _Buffet(response: resp),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // Filter chips (visible in both views)
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 4),
+              child: PlanFilterChips(),
+            ),
+            // Segmented control
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+              child: _ViewToggle(
+                selected: view,
+                onChanged: (v) =>
+                    ref.read(planViewProvider.notifier).state = v,
+              ),
+            ),
+            // Content area
+            Expanded(
+              child: view == PlanView.buffet
+                  ? _BuffetView(
+                      country: country,
+                      year: year,
+                      budget: budget,
+                      range: range,
+                      weekend: weekend,
+                      ref: ref,
+                    )
+                  : _SandwichView(
+                      country: country,
+                      year: year,
+                      weekend: weekend,
+                    ),
+            ),
+          ],
         ),
       ),
     );
   }
 }
+
+// ── Segmented control ──────────────────────────────────────────────────────────
+
+class _ViewToggle extends StatelessWidget {
+  const _ViewToggle({required this.selected, required this.onChanged});
+  final PlanView selected;
+  final ValueChanged<PlanView> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(4),
+      decoration: BoxDecoration(
+        color: DaysoffColors.surfaceContainerHigh,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        children: [
+          _Segment(
+            label: 'Length buffet',
+            isActive: selected == PlanView.buffet,
+            onTap: () => onChanged(PlanView.buffet),
+          ),
+          _Segment(
+            label: 'Sandwich days',
+            isActive: selected == PlanView.sandwich,
+            onTap: () => onChanged(PlanView.sandwich),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _Segment extends StatelessWidget {
+  const _Segment({
+    required this.label,
+    required this.isActive,
+    required this.onTap,
+  });
+  final String label;
+  final bool isActive;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: GestureDetector(
+        onTap: onTap,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+          decoration: BoxDecoration(
+            color: isActive ? Colors.white : Colors.transparent,
+            borderRadius: BorderRadius.circular(8),
+            border: isActive
+                ? Border.all(
+                    color: DaysoffColors.outlineVariant.withValues(alpha: 0.3))
+                : null,
+            boxShadow: isActive
+                ? [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.06),
+                      blurRadius: 4,
+                      offset: const Offset(0, 2),
+                    ),
+                  ]
+                : null,
+          ),
+          child: Text(
+            label,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: isActive ? FontWeight.w700 : FontWeight.w400,
+              color: isActive
+                  ? DaysoffColors.brandTeal
+                  : DaysoffColors.neutral700,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ── Buffet view (delegates to the old _Buffet widget) ─────────────────────────
+
+class _BuffetView extends StatelessWidget {
+  const _BuffetView({
+    required this.country,
+    required this.year,
+    required this.budget,
+    required this.range,
+    required this.weekend,
+    required this.ref,
+  });
+  final String country;
+  final int year;
+  final int budget;
+  final BreakLengthRange range;
+  final List<String> weekend;
+  final WidgetRef ref;
+
+  @override
+  Widget build(BuildContext context) {
+    final query = PlanQuery(
+      country: country,
+      year: year,
+      budget: budget,
+      minLength: range.min,
+      maxLength: range.max,
+      workweek: weekend,
+    );
+    final planAsync = ref.watch(planProvider(query));
+    return planAsync.when(
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (e, _) =>
+          _PlanError(onRetry: () => ref.invalidate(planProvider(query))),
+      data: (resp) => _Buffet(response: resp),
+    );
+  }
+}
+
+// ── Sandwich view ──────────────────────────────────────────────────────────────
+
+class _SandwichView extends ConsumerWidget {
+  const _SandwichView({
+    required this.country,
+    required this.year,
+    required this.weekend,
+  });
+  final String country;
+  final int year;
+  final List<String> weekend;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final query =
+        SandwichesQuery(country: country, year: year, workweek: weekend);
+    final async = ref.watch(sandwichesProvider(query));
+    return async.when(
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (e, _) => Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text(
+              "Couldn't load sandwich days.",
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+            ),
+            const SizedBox(height: 16),
+            FilledButton(
+              onPressed: () => ref.invalidate(sandwichesProvider(query)),
+              child: const Text('Retry'),
+            ),
+          ],
+        ),
+      ),
+      data: (resp) {
+        if (resp.sandwiches.isEmpty) {
+          return const Center(
+            child: Padding(
+              padding: EdgeInsets.all(32),
+              child: Text(
+                'No sandwich days this year.',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                    fontSize: 16, color: DaysoffColors.neutral700),
+              ),
+            ),
+          );
+        }
+        return ListView(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+          children: [
+            const Padding(
+              padding: EdgeInsets.only(bottom: 8),
+              child: Text(
+                'Single workdays wedged between days off — take one, gain a long weekend.',
+                style: TextStyle(
+                    fontSize: 14, color: DaysoffColors.neutral700, height: 1.5),
+              ),
+            ),
+            for (final s in resp.sandwiches) SandwichCard(record: s),
+            const SizedBox(height: 8),
+            EfficiencyInsight(records: resp.sandwiches),
+            const SizedBox(height: 32),
+          ],
+        );
+      },
+    );
+  }
+}
+
+// ── Buffet (carousel) widget ───────────────────────────────────────────────────
 
 class _Buffet extends StatefulWidget {
   const _Buffet({required this.response});
@@ -120,11 +343,6 @@ class _BuffetState extends State<_Buffet> {
 
     return ListView(
       children: [
-        // Filter chips
-        const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 20),
-          child: PlanFilterChips(),
-        ),
         // Best value banner
         if (_best != null)
           Padding(
