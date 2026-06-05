@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 import '../../../api/models/holiday.dart';
+import '../../../providers/holidays_view_provider.dart';
 import '../../../providers/preferences_provider.dart';
 import '../../../theme/colors.dart';
 import '../../../theme/typography.dart';
@@ -51,6 +52,19 @@ class _HolidayCalendarViewState extends ConsumerState<HolidayCalendarView> {
     super.initState();
     _focused = DateTime(widget.year, 1, 1);
     _selected = _defaultSelected();
+
+    // If calendarFocusProvider is set to an in-year date, seed focus/selection.
+    final focus = ref.read(calendarFocusProvider);
+    if (focus != null &&
+        !focus.isBefore(DateTime(widget.year, 1, 1)) &&
+        !focus.isAfter(DateTime(widget.year, 12, 31))) {
+      _focused = focus;
+      _selected = focus;
+      // Clear after the current frame so later manual opens use the default.
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        ref.read(calendarFocusProvider.notifier).state = null;
+      });
+    }
   }
 
   @override

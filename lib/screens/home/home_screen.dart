@@ -167,9 +167,11 @@ class _HolidaysList extends ConsumerWidget {
                 key: const Key('toggle-list'),
                 icon: const Icon(Icons.view_agenda_outlined,
                     color: DaysoffColors.brandTeal),
-                onPressed: () =>
-                    ref.read(holidaysViewProvider.notifier).state =
-                        HolidaysView.list,
+                onPressed: () {
+                  ref.read(calendarFocusProvider.notifier).state = null;
+                  ref.read(holidaysViewProvider.notifier).state =
+                      HolidaysView.list;
+                },
               ),
             // Bookmark → saved
             IconButton(
@@ -199,8 +201,17 @@ class _HolidaysList extends ConsumerWidget {
               SliverToBoxAdapter(child: MonthSection(month: month)),
               SliverList.builder(
                 itemCount: byMonth[month]!.length,
-                itemBuilder: (context, index) =>
-                    HolidayCard(holiday: byMonth[month]![index]),
+                itemBuilder: (context, index) {
+                  final h = byMonth[month]![index];
+                  return HolidayCard(
+                    holiday: h,
+                    onTap: () {
+                      ref.read(calendarFocusProvider.notifier).state = h.date;
+                      ref.read(holidaysViewProvider.notifier).state =
+                          HolidaysView.calendar;
+                    },
+                  );
+                },
               ),
             ],
         ],
