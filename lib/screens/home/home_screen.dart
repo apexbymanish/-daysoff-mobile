@@ -86,11 +86,15 @@ class _HolidaysList extends ConsumerWidget {
       workweek: weekend,
     )));
 
+    // Cap the upcoming list at the end of the longest *upcoming* break (one
+    // that ends today or later) — the longest break overall can be in the
+    // past, which would make the window empty. Fall back to year-end.
     DateTime cap = DateTime(year, 12, 31);
     planAsync.whenData((resp) {
       PlanTrip? longest;
       for (final list in resp.resultsByLength.values) {
         for (final t in list) {
+          if (t.breakEnd.isBefore(lower)) continue; // skip past breaks
           if (longest == null || t.breakLength > longest.breakLength) {
             longest = t;
           }

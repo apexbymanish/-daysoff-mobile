@@ -76,6 +76,63 @@ class _FakeApiClientWithPlan extends ApiClient {
       );
 }
 
+// Longest break overall is in the PAST (10-day ending Feb 22); the longest
+// UPCOMING break is the 5-day ending Aug 31. The cap must use the upcoming
+// one (Aug 31), not the past one (which would empty the window).
+class _FakeApiClientPastLongest extends ApiClient {
+  @override
+  Future<HolidaysResponse> getHolidays({
+    required String country,
+    required int year,
+    bool fromToday = false,
+  }) async =>
+      HolidaysResponse(
+        country: 'KR',
+        year: 2026,
+        count: 2,
+        holidays: [_inWindowHoliday, _postCapHoliday],
+      );
+
+  @override
+  Future<PlanResponse> getPlan({
+    required String country,
+    required int year,
+    int budget = 15,
+    int minLength = 3,
+    int maxLength = 10,
+    List<String>? workweek,
+  }) async =>
+      PlanResponse(
+        country: 'KR',
+        year: 2026,
+        budget: budget,
+        workweek: ['sat', 'sun'],
+        workweekSource: 'user',
+        resultsByLength: {
+          '10': [
+            PlanTrip(
+              breakStart: DateTime(2026, 2, 13),
+              breakEnd: DateTime(2026, 2, 22), // longest, but PAST
+              breakLength: 10,
+              ptoDates: const [],
+              ptoCost: 0,
+              anchors: const [],
+            ),
+          ],
+          '5': [
+            PlanTrip(
+              breakStart: DateTime(2026, 7, 1),
+              breakEnd: _capDate, // Aug 31 — longest UPCOMING
+              breakLength: 5,
+              ptoDates: [DateTime(2026, 7, 2)],
+              ptoCost: 1,
+              anchors: const [],
+            ),
+          ],
+        },
+      );
+}
+
 class _FakeApiClientPlanError extends ApiClient {
   @override
   Future<HolidaysResponse> getHolidays({
@@ -139,6 +196,25 @@ void main() {
     expect(find.text('Past Holiday'), findsNothing);
     // Near-future holiday shows (cap = year-end, may appear in hero + card).
     expect(find.text('In Window Holiday'), findsWidgets);
+  });
+
+  testWidgets(
+      'cap uses the longest UPCOMING break, not a longer past break',
+      (tester) async {
+    await tester.pumpWidget(ProviderScope(
+      overrides: [
+        apiClientProvider.overrideWithValue(_FakeApiClientPastLongest()),
+      ],
+      child: const MaterialApp(home: HomeScreen()),
+    ));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 50));
+
+    // The Feb (past) 10-day break must NOT cap the window to Feb; the Jul 4
+    // holiday (within the Aug 31 upcoming-break cap) must still show.
+    expect(find.text('In Window Holiday'), findsWidgets);
+    // Dec 25 is beyond the Aug 31 cap → hidden.
+    expect(find.text('Post Cap Holiday'), findsNothing);
   });
 
   testWidgets('hero still shows upcoming.first (today-based, from all holidays)',
