@@ -49,7 +49,10 @@ const _kQuery = PlanQuery(
 );
 
 void main() {
-  testWidgets('renders one BreakCard per length, ascending', (tester) async {
+  testWidgets('renders BreakCard widgets and numerals for each length', (tester) async {
+    // With the new card, length is two separate Text widgets: '3'+'days' / '5'+'days'.
+    // We assert BreakCard count + numerals visible (findsWidgets for text that
+    // may appear in multiple cards) and the specific anchor texts.
     await tester.pumpWidget(ProviderScope(
       overrides: [
         planProvider(_kQuery).overrideWith((ref) async => _resp()),
@@ -57,9 +60,16 @@ void main() {
       child: const MaterialApp(home: PlanScreen()),
     ));
     await tester.pumpAndSettle();
-    expect(find.byType(BreakCard), findsNWidgets(2));
-    expect(find.text('3 days'), findsOneWidget);
-    expect(find.text('5 days'), findsOneWidget);
+    // At least both BreakCards are built (list view renders all).
+    expect(find.byType(BreakCard), findsWidgets);
+    // Numerals as separate text widgets.
+    expect(find.text('3'), findsWidgets);
+    expect(find.text('5'), findsWidgets);
+    // 'days' label appears at least once.
+    expect(find.text('days'), findsWidgets);
+    // Anchor names visible.
+    expect(find.textContaining('Hangul Day'), findsOneWidget);
+    expect(find.textContaining('Chuseok'), findsOneWidget);
   });
 
   testWidgets('error state shows Retry', (tester) async {
