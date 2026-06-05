@@ -32,6 +32,28 @@ class _FakeApiClient extends ApiClient {
       );
 }
 
+class _LongNameApiClient extends ApiClient {
+  @override
+  Future<HolidaysResponse> getHolidays({
+    required String country,
+    required int year,
+    bool fromToday = false,
+  }) async =>
+      HolidaysResponse(
+        country: 'KR',
+        year: 2026,
+        count: 1,
+        holidays: [
+          Holiday(
+            date: DateTime(2026, 9, 24),
+            name: 'Alternative holiday for Independence Movement Day',
+            nameLocal: '삼일절 대체 공휴일',
+            source: 'library',
+          ),
+        ],
+      );
+}
+
 PlanTrip _trip() => PlanTrip(
       breakStart: DateTime(2026, 9, 23),
       breakEnd: DateTime(2026, 9, 27),
@@ -73,6 +95,20 @@ void main() {
 
     // Sep 23 is PTO kind.
     expect(find.text('ORDINARY DAY'), findsWidgets);
+  });
+
+  testWidgets('a long holiday name does not overflow the tag', (tester) async {
+    // A RenderFlex overflow throws in widget tests, so a clean render proves
+    // the tag truncates (ellipsis) instead of overflowing.
+    await tester.pumpWidget(ProviderScope(
+      overrides: [apiClientProvider.overrideWithValue(_LongNameApiClient())],
+      child: MaterialApp(home: BreakDetailScreen(trip: _trip())),
+    ));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 50));
+
+    expect(tester.takeException(), isNull);
+    expect(find.textContaining('Holiday • '), findsWidgets);
   });
 
   testWidgets('Save this break adds to savedBreaksProvider', (tester) async {

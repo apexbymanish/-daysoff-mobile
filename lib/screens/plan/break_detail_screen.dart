@@ -377,52 +377,60 @@ class _DayRow extends StatelessWidget {
       ),
       padding: const EdgeInsets.symmetric(vertical: 12),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                fmt.format(day),
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 17,
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  fmt.format(day),
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 17,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  overline,
+                  style: const TextStyle(
+                    color: Color(0xFF8B9197),
+                    fontSize: 11,
+                    fontWeight: FontWeight.w500,
+                    letterSpacing: 0.8,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 12),
+          Flexible(
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+              decoration: BoxDecoration(
+                color: tagBg,
+                borderRadius: BorderRadius.circular(999),
+                border: Border.all(
+                  color: switch (kind) {
+                    BreakDayKind.pto => _kSage.withValues(alpha: 0.20),
+                    BreakDayKind.holiday =>
+                      DaysoffColors.koreaRed.withValues(alpha: 0.20),
+                    BreakDayKind.weekend =>
+                      DaysoffColors.brandTeal.withValues(alpha: 0.20),
+                  },
                 ),
               ),
-              const SizedBox(height: 2),
-              Text(
-                overline,
+              child: Text(
+                tagLabel,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                softWrap: false,
                 style: const TextStyle(
-                  color: Color(0xFF8B9197),
+                  color: _kWarmCream,
                   fontSize: 11,
                   fontWeight: FontWeight.w500,
                   letterSpacing: 0.8,
                 ),
-              ),
-            ],
-          ),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-            decoration: BoxDecoration(
-              color: tagBg,
-              borderRadius: BorderRadius.circular(999),
-              border: Border.all(
-                color: switch (kind) {
-                  BreakDayKind.pto => _kSage.withValues(alpha: 0.20),
-                  BreakDayKind.holiday =>
-                    DaysoffColors.koreaRed.withValues(alpha: 0.20),
-                  BreakDayKind.weekend =>
-                    DaysoffColors.brandTeal.withValues(alpha: 0.20),
-                },
-              ),
-            ),
-            child: Text(
-              tagLabel,
-              style: const TextStyle(
-                color: _kWarmCream,
-                fontSize: 11,
-                fontWeight: FontWeight.w500,
-                letterSpacing: 0.8,
               ),
             ),
           ),
