@@ -27,7 +27,8 @@ SandwichRecord _rec() => SandwichRecord(
     );
 
 void main() {
-  const q = SandwichesQuery(country: 'KR', year: 2026);
+  // workweek matches the weekendProvider default ['sat','sun'] now passed by the screen
+  const q = SandwichesQuery(country: 'KR', year: 2026, workweek: ['sat', 'sun']);
 
   testWidgets('data state renders a SandwichCard', (tester) async {
     await tester.pumpWidget(ProviderScope(

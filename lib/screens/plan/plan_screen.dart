@@ -5,7 +5,9 @@ import 'package:go_router/go_router.dart';
 import '../../api/models/plan_response.dart';
 import '../../api/models/plan_trip.dart';
 import '../../providers/plan_provider.dart';
+import '../../providers/preferences_provider.dart';
 import '../../providers/selection_provider.dart';
+import '../../widgets/preferences_editor_sheet.dart';
 import '../../router/app_router.dart';
 import '../../core/country_flag.dart';
 import '../../theme/colors.dart';
@@ -18,10 +20,29 @@ class PlanScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final country = ref.watch(selectedCountryProvider);
     final year = ref.watch(selectedYearProvider);
-    final query = PlanQuery(country: country, year: year, budget: 15);
+    final budget = ref.watch(ptoBudgetProvider);
+    final range = ref.watch(breakLengthProvider);
+    final weekend = ref.watch(weekendProvider);
+    final query = PlanQuery(
+      country: country,
+      year: year,
+      budget: budget,
+      minLength: range.min,
+      maxLength: range.max,
+      workweek: weekend,
+    );
     final planAsync = ref.watch(planProvider(query));
     return Scaffold(
-      appBar: AppBar(title: const Text('Plan your year')),
+      appBar: AppBar(
+        title: const Text('Plan your year'),
+        actions: [
+          TextButton.icon(
+            onPressed: () => showPreferencesEditor(context),
+            icon: const Icon(Icons.tune, size: 18),
+            label: const Text('Adjust'),
+          ),
+        ],
+      ),
       body: SafeArea(
         child: planAsync.when(
           loading: () => const Center(child: CircularProgressIndicator()),
