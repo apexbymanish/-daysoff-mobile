@@ -102,7 +102,7 @@ class _HolidayCalendarViewState extends ConsumerState<HolidayCalendarView> {
       weekendDays: weekendInts,
       headerStyle: const HeaderStyle(formatButtonVisible: false, titleCentered: true),
       eventLoader: (day) => byDay[_d(day)] ?? const [],
-      onPageChanged: (focused) => _focused = focused,
+      onPageChanged: (focused) => setState(() => _focused = focused),
       onDaySelected: (selected, focused) {
         setState(() => _focused = focused);
         showDayDetailSheet(
