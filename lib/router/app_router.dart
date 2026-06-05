@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../api/models/plan_trip.dart';
 import '../core/storage_keys.dart';
 import '../screens/country_picker/country_picker_screen.dart';
+import '../screens/destinations/destinations_screen.dart';
 import '../screens/home/home_screen.dart';
 import '../screens/onboarding/onboarding_screen.dart';
 import '../screens/plan/break_detail_screen.dart';
@@ -22,6 +23,7 @@ class AppRoutes {
   static const settings = '/settings';
   static const countryPicker = '/picker/country';
   static const saved = '/saved';
+  static const destinations = '/destinations';
 }
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
@@ -89,6 +91,12 @@ final appRouter = GoRouter(
       path: AppRoutes.saved,
       parentNavigatorKey: _rootNavigatorKey,
       builder: (context, state) => const SavedScreen(),
+    ),
+    // Destinations showcase — full-screen over the nav bar (root navigator).
+    GoRoute(
+      path: AppRoutes.destinations,
+      parentNavigatorKey: _rootNavigatorKey,
+      builder: (context, state) => const DestinationsScreen(),
     ),
   ],
 );
