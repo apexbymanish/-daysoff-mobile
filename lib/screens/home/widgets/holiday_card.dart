@@ -1,27 +1,28 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
 import '../../../api/models/holiday.dart';
+import '../../../core/holiday_status.dart';
+import '../../../providers/preferences_provider.dart';
 import '../../../theme/colors.dart';
 
-/// A single holiday row in the home timeline.
-///
-/// Shows a left date stack (day numeral + weekday) and the holiday name,
-/// plus a small "free" / "absorbed" badge depending on whether the date
-/// falls on a weekend (Sat/Sun, assumed for KR per master.md fallback).
-class HolidayCard extends StatelessWidget {
+/// A single holiday row in the home timeline: date stack, the holiday name
+/// (with its native-language name beneath when available), and a free/absorbed
+/// badge based on the user's weekend.
+class HolidayCard extends ConsumerWidget {
   const HolidayCard({super.key, required this.holiday});
 
   final Holiday holiday;
 
-  bool get _isAbsorbed =>
-      holiday.date.weekday == DateTime.saturday ||
-      holiday.date.weekday == DateTime.sunday;
-
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final weekend = ref.watch(weekendProvider);
+    final absorbed = isAbsorbed(holiday.date, weekend);
     final dayFmt = DateFormat('d');
     final dowFmt = DateFormat('EEE');
+    final hasLocal =
+        holiday.nameLocal != null && holiday.nameLocal != holiday.name;
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
@@ -31,6 +32,7 @@ class HolidayCard extends StatelessWidget {
         ),
       ),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           SizedBox(
             width: 56,
@@ -40,31 +42,41 @@ class HolidayCard extends StatelessWidget {
                 Text(
                   dayFmt.format(holiday.date),
                   style: const TextStyle(
-                    fontSize: 26,
-                    fontWeight: FontWeight.w600,
-                    height: 1.0,
-                  ),
+                      fontSize: 26, fontWeight: FontWeight.w600, height: 1.0),
                 ),
                 const SizedBox(height: 2),
                 Text(
                   dowFmt.format(holiday.date).toUpperCase(),
                   style: const TextStyle(
-                    fontSize: 11,
-                    color: DaysoffColors.neutral500,
-                    letterSpacing: 0.8,
-                  ),
+                      fontSize: 11,
+                      color: DaysoffColors.neutral500,
+                      letterSpacing: 0.8),
                 ),
               ],
             ),
           ),
           const SizedBox(width: 12),
           Expanded(
-            child: Text(
-              holiday.name,
-              style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  holiday.name,
+                  style: const TextStyle(
+                      fontSize: 15, fontWeight: FontWeight.w500),
+                ),
+                if (hasLocal) ...[
+                  const SizedBox(height: 2),
+                  Text(
+                    holiday.nameLocal!,
+                    style: const TextStyle(
+                        fontSize: 12, color: DaysoffColors.neutral500),
+                  ),
+                ],
+              ],
             ),
           ),
-          _StatusBadge(absorbed: _isAbsorbed),
+          _StatusBadge(absorbed: absorbed),
         ],
       ),
     );
