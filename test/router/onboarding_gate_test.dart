@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -60,6 +59,7 @@ void main() {
 
     // No Welcome CTA — we're on Home (inside the nav shell).
     expect(find.text('Get started'), findsNothing);
-    expect(find.byType(NavigationBar), findsOneWidget);
+    // Custom 3-tab bar renders with uppercase labels.
+    expect(find.text('HOLIDAYS'), findsWidgets);
   });
 }

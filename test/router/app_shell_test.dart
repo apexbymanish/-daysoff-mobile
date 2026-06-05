@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:daysoff_mobile/api/models/holidays_response.dart';
@@ -7,7 +6,7 @@ import 'package:daysoff_mobile/providers/holidays_provider.dart';
 import 'package:daysoff_mobile/screens/settings/settings_screen.dart';
 
 void main() {
-  testWidgets('shell shows 4 nav destinations and can switch to Settings',
+  testWidgets('shell shows 3 custom nav tabs and can switch to Settings',
       (tester) async {
     await tester.pumpWidget(ProviderScope(
       overrides: [
@@ -22,13 +21,16 @@ void main() {
     await tester.tap(find.text('Get started'));
     await tester.pumpAndSettle();
 
-    expect(find.byType(NavigationBar), findsOneWidget);
-    expect(find.text('Holidays'), findsWidgets);
-    expect(find.text('Plan'), findsWidgets);
-    expect(find.text('Sandwich'), findsWidgets);
-    expect(find.text('Settings'), findsWidgets);
+    // Custom 3-tab bar — labels are uppercase.
+    expect(find.text('HOLIDAYS'), findsWidgets);
+    expect(find.text('PLAN'), findsWidgets);
+    expect(find.text('SETTINGS'), findsWidgets);
 
-    await tester.tap(find.text('Settings'));
+    // No Sandwich tab.
+    expect(find.text('Sandwich'), findsNothing);
+    expect(find.text('SANDWICH'), findsNothing);
+
+    await tester.tap(find.text('SETTINGS'));
     await tester.pumpAndSettle();
     expect(find.byType(SettingsScreen), findsOneWidget);
   });
