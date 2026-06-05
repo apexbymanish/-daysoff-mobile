@@ -9,10 +9,11 @@ import '../../providers/selection_provider.dart';
 import '../../router/app_router.dart';
 import '../../core/country_flag.dart';
 import '../../theme/colors.dart';
-import 'widgets/days_until_banner.dart';
+import 'widgets/day_detail_sheet.dart';
 import 'widgets/holiday_calendar_view.dart';
 import 'widgets/holiday_card.dart';
 import 'widgets/month_section.dart';
+import 'widgets/next_break_hero.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
@@ -125,7 +126,11 @@ class _HolidaysList extends ConsumerWidget {
         else ...[
           if (upcoming.isNotEmpty)
             SliverToBoxAdapter(
-              child: DaysUntilBanner(next: upcoming.first),
+              child: NextBreakHero(
+                next: upcoming.first,
+                onSeeDetails: () => showDayDetailSheet(
+                    context, upcoming.first.date, [upcoming.first], null),
+              ),
             ),
           for (final month in months) ...[
             SliverToBoxAdapter(child: MonthSection(month: month)),

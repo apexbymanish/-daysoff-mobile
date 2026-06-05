@@ -34,13 +34,27 @@ Future<void> showDayDetailSheet(
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 4),
                 child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const Icon(Icons.event, size: 18, color: DaysoffColors.brandTeal),
                     const SizedBox(width: 8),
                     Expanded(
-                      child: Text(h.source == 'news'
-                          ? '${h.name} · temporary (news-detected)'
-                          : h.name),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(h.source == 'news'
+                              ? '${h.name} · temporary (news-detected)'
+                              : h.name),
+                          if (h.nameLocal != null && h.nameLocal != h.name)
+                            Padding(
+                              padding: const EdgeInsets.only(top: 2),
+                              child: Text(h.nameLocal!,
+                                  style: const TextStyle(
+                                      fontSize: 12,
+                                      color: DaysoffColors.neutral500)),
+                            ),
+                        ],
+                      ),
                     ),
                   ],
                 ),
