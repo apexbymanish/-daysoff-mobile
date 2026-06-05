@@ -50,4 +50,6 @@ class DaysoffColors {
   static const Color onRedContainer = Color(0xFF93000A); // on-error-container
   static const Color surfaceContainerHigh = Color(0xFFE7E8E8);
   static const Color surfaceContainerLow = Color(0xFFF3F4F3);
+  static const Color surfaceVariant = Color(0xFFE2E3E2);
+  static const Color oliveFixedDim = Color(0xFFC1CBA6); // tertiary-fixed-dim (calendar holiday fill)
 }
