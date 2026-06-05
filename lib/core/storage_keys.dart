@@ -6,6 +6,10 @@ class StorageKeys {
   static const themeMode = 'theme_mode';
   static const onboardingSeen = 'onboarding_seen';
   static const savedBreaks = 'saved_breaks';
+  static const ptoBudget = 'pto_budget';
+  static const breakMin = 'break_min';
+  static const breakMax = 'break_max';
+  static const weekend = 'weekend';
 }
 
 /// Tracks whether [GetStorage.init()] has completed.
