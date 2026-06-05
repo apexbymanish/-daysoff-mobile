@@ -12,7 +12,7 @@ const kWeekdayLabels = {
 
 /// "Sat, Sun" — week-ordered, ignoring the stored order.
 String formatWeekend(List<String> days) =>
-    kWeekdayKeys.where(days.contains).map((d) => kWeekdayLabels[d]).join(', ');
+    kWeekdayKeys.where(days.contains).map((d) => kWeekdayLabels[d]!).join(', ');
 
 /// Inclusive min/max break length (days) for the plan buffet.
 class BreakLengthRange {
