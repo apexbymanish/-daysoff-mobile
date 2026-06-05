@@ -31,6 +31,7 @@ dependencies:
 
   # On-device key-value persistence
   get_storage: ^2.1.1
+  table_calendar: ^3.2.0
 
 dev_dependencies:
   flutter_test:
