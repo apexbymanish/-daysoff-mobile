@@ -157,6 +157,33 @@ void main() {
       expect(find.byType(BreakCard), findsNothing);
     });
 
+    testWidgets('switching FROM an empty month to another does not crash',
+        (tester) async {
+      // Regression: in an empty month no PageView is built, so the
+      // PageController is detached; the next month change must not assert
+      // 'PageController is not attached to a PageView'.
+      await tester.pumpWidget(_buildApp());
+      await _settle(tester);
+
+      await tester.tap(find.byKey(const Key('month-1'))); // empty (Jan)
+      await _settle(tester);
+      expect(find.textContaining('No break options'), findsOneWidget);
+
+      await tester.tap(find.byKey(const Key('month-2'))); // populated (Feb)
+      await _settle(tester);
+
+      expect(tester.takeException(), isNull);
+      expect(find.textContaining('Valentine'), findsOneWidget);
+
+      // And back to All from a populated state, then to empty again.
+      await tester.tap(find.byKey(const Key('month-1'))); // empty
+      await _settle(tester);
+      await tester.tap(find.byKey(const Key('month-all'))); // populated
+      await _settle(tester);
+      expect(tester.takeException(), isNull);
+      expect(find.textContaining('Chuseok'), findsOneWidget);
+    });
+
     testWidgets('tapping All after filtering shows all trips again',
         (tester) async {
       await tester.pumpWidget(_buildApp());
