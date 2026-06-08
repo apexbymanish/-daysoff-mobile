@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:daysoff_mobile/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:daysoff_mobile/api/api_client.dart';
@@ -65,7 +66,7 @@ PlanTrip _trip() => PlanTrip(
 
 ProviderScope _wrap(Widget child) => ProviderScope(
       overrides: [apiClientProvider.overrideWithValue(_FakeApiClient())],
-      child: MaterialApp(home: child),
+      child: MaterialApp(localizationsDelegates: AppL10n.localizationsDelegates, supportedLocales: AppL10n.supportedLocales, home: child),
     );
 
 void main() {
@@ -102,7 +103,7 @@ void main() {
     // the tag truncates (ellipsis) instead of overflowing.
     await tester.pumpWidget(ProviderScope(
       overrides: [apiClientProvider.overrideWithValue(_LongNameApiClient())],
-      child: MaterialApp(home: BreakDetailScreen(trip: _trip())),
+      child: MaterialApp(localizationsDelegates: AppL10n.localizationsDelegates, supportedLocales: AppL10n.supportedLocales, home: BreakDetailScreen(trip: _trip())),
     ));
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 50));
@@ -119,7 +120,7 @@ void main() {
 
     await tester.pumpWidget(UncontrolledProviderScope(
       container: container,
-      child: MaterialApp(home: BreakDetailScreen(trip: _trip())),
+      child: MaterialApp(localizationsDelegates: AppL10n.localizationsDelegates, supportedLocales: AppL10n.supportedLocales, home: BreakDetailScreen(trip: _trip())),
     ));
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 50));

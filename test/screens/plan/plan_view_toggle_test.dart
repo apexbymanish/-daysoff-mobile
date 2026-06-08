@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:daysoff_mobile/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:daysoff_mobile/api/api_client.dart';
@@ -80,7 +81,7 @@ Widget _buildApp() => ProviderScope(
       overrides: [
         apiClientProvider.overrideWith((ref) => _FakeApiClient()),
       ],
-      child: const MaterialApp(home: PlanScreen()),
+      child: MaterialApp(localizationsDelegates: AppL10n.localizationsDelegates, supportedLocales: AppL10n.supportedLocales, home: PlanScreen()),
     );
 
 void main() {

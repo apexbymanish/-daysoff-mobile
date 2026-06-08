@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:daysoff_mobile/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:daysoff_mobile/api/models/holiday.dart';
@@ -20,7 +21,7 @@ Future<void> _pump(WidgetTester tester, {List<String>? weekend}) {
   addTearDown(container.dispose);
   return tester.pumpWidget(UncontrolledProviderScope(
     container: container,
-    child: MaterialApp(home: Scaffold(body: HolidayCard(holiday: _h()))),
+    child: MaterialApp(localizationsDelegates: AppL10n.localizationsDelegates, supportedLocales: AppL10n.supportedLocales, home: Scaffold(body: HolidayCard(holiday: _h()))),
   ));
 }
 
@@ -48,7 +49,7 @@ void main() {
     addTearDown(container.dispose);
     await tester.pumpWidget(UncontrolledProviderScope(
       container: container,
-      child: MaterialApp(
+      child: MaterialApp(localizationsDelegates: AppL10n.localizationsDelegates, supportedLocales: AppL10n.supportedLocales, 
         home: Scaffold(
           body: HolidayCard(
             holiday: _h(),

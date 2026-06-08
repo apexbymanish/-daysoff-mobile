@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:daysoff_mobile/l10n/app_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:daysoff_mobile/api/models/plan_trip.dart';
 import 'package:daysoff_mobile/screens/plan/widgets/best_value_banner.dart';
@@ -14,7 +15,7 @@ void main() {
       anchors: const ['Chuseok'],
     );
     await tester.pumpWidget(
-        MaterialApp(home: Scaffold(body: BestValueBanner(trip: t))));
+        MaterialApp(localizationsDelegates: AppL10n.localizationsDelegates, supportedLocales: AppL10n.supportedLocales, home: Scaffold(body: BestValueBanner(trip: t))));
     expect(find.textContaining('Best value'), findsOneWidget);
     expect(find.textContaining('5-day'), findsOneWidget);
   });

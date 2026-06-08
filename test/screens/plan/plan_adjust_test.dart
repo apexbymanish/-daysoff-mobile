@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:daysoff_mobile/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:daysoff_mobile/api/api_client.dart';
@@ -34,7 +35,7 @@ void main() {
     // The app bar Adjust text button was replaced with an edit icon button.
     await tester.pumpWidget(ProviderScope(
       overrides: [apiClientProvider.overrideWithValue(_FakeApiClient())],
-      child: const MaterialApp(home: PlanScreen()),
+      child: MaterialApp(localizationsDelegates: AppL10n.localizationsDelegates, supportedLocales: AppL10n.supportedLocales, home: PlanScreen()),
     ));
     await tester.pumpAndSettle();
     await tester.tap(find.byIcon(Icons.edit_outlined));

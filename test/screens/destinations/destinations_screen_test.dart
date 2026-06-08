@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:daysoff_mobile/l10n/app_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:daysoff_mobile/screens/destinations/destinations_screen.dart';
 
 void main() {
-  Widget makeApp() => const MaterialApp(home: DestinationsScreen());
+  Widget makeApp() => MaterialApp(localizationsDelegates: AppL10n.localizationsDelegates, supportedLocales: AppL10n.supportedLocales, home: DestinationsScreen());
 
   testWidgets('renders title, all 4 destinations, and Trip Collections section',
       (tester) async {

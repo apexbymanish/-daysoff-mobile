@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:daysoff_mobile/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:daysoff_mobile/api/models/plan_response.dart';
@@ -57,7 +58,7 @@ void main() {
       overrides: [
         planProvider(_kQuery).overrideWith((ref) async => _resp()),
       ],
-      child: const MaterialApp(home: PlanScreen()),
+      child: MaterialApp(localizationsDelegates: AppL10n.localizationsDelegates, supportedLocales: AppL10n.supportedLocales, home: PlanScreen()),
     ));
     await tester.pumpAndSettle();
     // At least both BreakCards are built (list view renders all).
@@ -78,7 +79,7 @@ void main() {
         planProvider(_kQuery)
             .overrideWith((ref) async => throw Exception('boom')),
       ],
-      child: const MaterialApp(home: PlanScreen()),
+      child: MaterialApp(localizationsDelegates: AppL10n.localizationsDelegates, supportedLocales: AppL10n.supportedLocales, home: PlanScreen()),
     ));
     await tester.pumpAndSettle();
     expect(find.text('Retry'), findsOneWidget);

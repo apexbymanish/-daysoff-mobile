@@ -28,8 +28,8 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byType(MaterialApp), findsOneWidget);
-    // Custom 3-tab bar renders with uppercase labels.
-    expect(find.text('HOLIDAYS'), findsWidgets);
+    // Custom 3-tab bar renders the localized labels.
+    expect(find.text('Holidays'), findsWidgets);
     expect(find.text('No holidays for this year.'), findsOneWidget);
   });
 }

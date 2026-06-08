@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../l10n/app_localizations.dart';
 import '../theme/colors.dart';
 import '../theme/typography.dart';
 
@@ -13,14 +14,14 @@ class ScaffoldWithNavBar extends StatelessWidget {
   const ScaffoldWithNavBar({super.key, required this.navigationShell});
   final StatefulNavigationShell navigationShell;
 
-  static const _tabs = [
-    _TabItem(icon: Icons.calendar_today, label: 'HOLIDAYS'),
-    _TabItem(icon: Icons.auto_awesome, label: 'PLAN'),
-    _TabItem(icon: Icons.settings, label: 'SETTINGS'),
-  ];
-
   @override
   Widget build(BuildContext context) {
+    final l = AppL10n.of(context);
+    final tabs = [
+      _TabItem(icon: Icons.calendar_today, label: l.navHolidays),
+      _TabItem(icon: Icons.auto_awesome, label: l.navPlan),
+      _TabItem(icon: Icons.settings, label: l.navSettings),
+    ];
     return Scaffold(
       body: navigationShell,
       bottomNavigationBar: SafeArea(
@@ -41,8 +42,8 @@ class ScaffoldWithNavBar extends StatelessWidget {
             ],
           ),
           child: Row(
-            children: List.generate(_tabs.length, (index) {
-              final tab = _tabs[index];
+            children: List.generate(tabs.length, (index) {
+              final tab = tabs[index];
               final isSelected = navigationShell.currentIndex == index;
               return Expanded(
                 child: GestureDetector(

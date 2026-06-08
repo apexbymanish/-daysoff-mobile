@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:daysoff_mobile/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:daysoff_mobile/api/api_client.dart';
@@ -49,7 +50,7 @@ void main() {
   testWidgets('toggle switches between list and calendar', (tester) async {
     await tester.pumpWidget(ProviderScope(
       overrides: [apiClientProvider.overrideWithValue(_FakeApiClient())],
-      child: const MaterialApp(home: HomeScreen()),
+      child: MaterialApp(localizationsDelegates: AppL10n.localizationsDelegates, supportedLocales: AppL10n.supportedLocales, home: HomeScreen()),
     ));
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 50));

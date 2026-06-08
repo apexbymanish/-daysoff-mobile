@@ -4,6 +4,8 @@ import 'package:go_router/go_router.dart';
 
 import '../../auth/auth_controller.dart';
 import '../../core/country_flag.dart';
+import '../../l10n/app_localizations.dart';
+import '../../providers/locale_provider.dart';
 import '../../providers/preferences_provider.dart';
 import '../../providers/selection_provider.dart';
 import '../../providers/theme_mode_provider.dart';
@@ -22,52 +24,63 @@ class SettingsScreen extends ConsumerWidget {
     final range = ref.watch(breakLengthProvider);
     final weekend = ref.watch(weekendProvider);
     final country = ref.watch(selectedCountryProvider);
+    final locale = ref.watch(localeProvider);
+    final l = AppL10n.of(context);
 
     void openEditor() => showPreferencesEditor(context);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Settings')),
+      appBar: AppBar(title: Text(l.settingsTitle)),
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           children: [
             // ── PREFERENCES ──────────────────────────────────────────────
-            _SectionHeader('PREFERENCES'),
+            _SectionHeader(l.sectionPreferences),
             _SettingsCard(
-              label: 'Country of work',
+              label: l.settingCountry,
               value: '${countryFlag(country)} $country',
               onTap: () => context.push(AppRoutes.countryPicker),
             ),
             const SizedBox(height: 8),
             _SettingsCard(
-              label: 'Weekend',
+              label: l.settingWeekend,
               value: formatWeekend(weekend),
               onTap: openEditor,
             ),
             const SizedBox(height: 8),
             _SettingsCard(
-              label: 'PTO budget',
-              value: '$budget days',
+              label: l.settingPtoBudget,
+              value: l.daysValue(budget),
               onTap: openEditor,
             ),
             const SizedBox(height: 8),
             _SettingsCard(
-              label: 'Break length',
-              value: '${range.min}–${range.max} days',
+              label: l.settingBreakLength,
+              value: l.daysRange(range.min, range.max),
               onTap: openEditor,
+            ),
+            const SizedBox(height: 8),
+            _SettingsCard(
+              label: l.settingLanguage,
+              value: locale == null
+                  ? l.languageSystem
+                  : (supportedLanguages[locale.languageCode] ??
+                      locale.languageCode),
+              onTap: () => _pickLanguage(context, ref, l),
             ),
 
             // ── APPEARANCE ───────────────────────────────────────────────
-            _SectionHeader('APPEARANCE'),
-            _ThemeCard(mode: mode, ref: ref),
+            _SectionHeader(l.sectionAppearance),
+            _ThemeCard(mode: mode, ref: ref, l: l),
 
             // ── CALENDAR & REMINDERS (disabled placeholders) ─────────────
-            _SectionHeader('CALENDAR & REMINDERS'),
+            _SectionHeader(l.sectionCalendar),
             Opacity(
               opacity: 0.5,
               child: _SettingsCard(
-                label: 'Apple Calendar',
-                value: 'Not connected',
+                label: l.appleCalendar,
+                value: l.notConnected,
                 onTap: null,
                 showChevron: false,
               ),
@@ -76,7 +89,7 @@ class SettingsScreen extends ConsumerWidget {
             Opacity(
               opacity: 0.5,
               child: _SettingsCard(
-                label: 'Default reminder',
+                label: l.defaultReminder,
                 value: '2 weeks before',
                 onTap: null,
                 showChevron: false,
@@ -84,7 +97,7 @@ class SettingsScreen extends ConsumerWidget {
             ),
 
             // ── ACCOUNT ──────────────────────────────────────────────────
-            _SectionHeader('ACCOUNT'),
+            _SectionHeader(l.sectionAccount),
             const _AccountSection(),
 
             // ── FOOTER ───────────────────────────────────────────────────
@@ -209,10 +222,11 @@ class _SettingsCard extends StatelessWidget {
 // ─── _ThemeCard ────────────────────────────────────────────────────────────
 
 class _ThemeCard extends StatelessWidget {
-  const _ThemeCard({required this.mode, required this.ref});
+  const _ThemeCard({required this.mode, required this.ref, required this.l});
 
   final ThemeMode mode;
   final WidgetRef ref;
+  final AppL10n l;
 
   @override
   Widget build(BuildContext context) {
@@ -233,12 +247,13 @@ class _ThemeCard extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          const Text('Theme', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
+          Text(l.settingTheme,
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
           SegmentedButton<ThemeMode>(
-            segments: const [
-              ButtonSegment(value: ThemeMode.system, label: Text('System')),
-              ButtonSegment(value: ThemeMode.light, label: Text('Light')),
-              ButtonSegment(value: ThemeMode.dark, label: Text('Dark')),
+            segments: [
+              ButtonSegment(value: ThemeMode.system, label: Text(l.themeSystem)),
+              ButtonSegment(value: ThemeMode.light, label: Text(l.themeLight)),
+              ButtonSegment(value: ThemeMode.dark, label: Text(l.themeDark)),
             ],
             selected: {mode},
             showSelectedIcon: false,
@@ -259,43 +274,39 @@ class _AccountSection extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final auth = ref.watch(authControllerProvider);
+    final l = AppL10n.of(context);
+    Widget signInCard() => _SettingsCard(
+          label: l.signInCreateAccount,
+          value: l.syncTagline,
+          onTap: () => context.push(AppRoutes.auth),
+        );
     return auth.when(
-      loading: () => _SettingsCard(
-          label: 'Account', value: 'Loading…', showChevron: false),
-      error: (_, _) => _SettingsCard(
-        label: 'Sign in / Create account',
-        value: 'Sync your saved breaks across devices',
-        onTap: () => context.push(AppRoutes.auth),
-      ),
+      loading: () =>
+          _SettingsCard(label: l.sectionAccount, value: '…', showChevron: false),
+      error: (_, _) => signInCard(),
       data: (state) {
-        if (!state.isAuthenticated) {
-          return _SettingsCard(
-            label: 'Sign in / Create account',
-            value: 'Sync your saved breaks across devices',
-            onTap: () => context.push(AppRoutes.auth),
-          );
-        }
+        if (!state.isAuthenticated) return signInCard();
         final user = state.user!;
         return Column(
           children: [
             _SettingsCard(
               label: user.displayName?.isNotEmpty == true
                   ? user.displayName!
-                  : 'Signed in',
-              value: '${user.email} · sync on',
+                  : l.authSignIn,
+              value: '${user.email} · ${l.syncOn}',
               showChevron: false,
               trailing: const Icon(Icons.cloud_done, color: DaysoffColors.brandTeal),
             ),
             const SizedBox(height: 8),
             _DangerCard(
-              label: 'Log out',
+              label: l.logOut,
               onTap: () =>
                   ref.read(authControllerProvider.notifier).logout(),
             ),
             const SizedBox(height: 8),
             _DangerCard(
-              label: 'Delete account',
-              onTap: () => _confirmDelete(context, ref),
+              label: l.deleteAccount,
+              onTap: () => _confirmDelete(context, ref, l),
             ),
           ],
         );
@@ -303,21 +314,21 @@ class _AccountSection extends ConsumerWidget {
     );
   }
 
-  Future<void> _confirmDelete(BuildContext context, WidgetRef ref) async {
+  Future<void> _confirmDelete(
+      BuildContext context, WidgetRef ref, AppL10n l) async {
     final ok = await showDialog<bool>(
       context: context,
       builder: (c) => AlertDialog(
-        title: const Text('Delete account?'),
-        content: const Text(
-            'This permanently deletes your account and synced saved breaks.'),
+        title: Text(l.deleteConfirmTitle),
+        content: Text(l.deleteConfirmBody),
         actions: [
           TextButton(
               onPressed: () => Navigator.pop(c, false),
-              child: const Text('Cancel')),
+              child: Text(l.cancel)),
           TextButton(
               onPressed: () => Navigator.pop(c, true),
-              child: const Text('Delete',
-                  style: TextStyle(color: DaysoffColors.danger))),
+              child: Text(l.delete,
+                  style: const TextStyle(color: DaysoffColors.danger))),
         ],
       ),
     );
@@ -360,4 +371,43 @@ class _DangerCard extends StatelessWidget {
       ),
     );
   }
+}
+
+// ─── Language picker ─────────────────────────────────────────────────────────
+
+Future<void> _pickLanguage(
+    BuildContext context, WidgetRef ref, AppL10n l) async {
+  final current = ref.read(localeProvider)?.languageCode;
+  await showModalBottomSheet<void>(
+    context: context,
+    showDragHandle: true,
+    builder: (sheet) => SafeArea(
+      child: ListView(
+        shrinkWrap: true,
+        children: [
+          ListTile(
+            title: Text(l.languageSystem),
+            trailing: current == null
+                ? const Icon(Icons.check, color: DaysoffColors.brandTeal)
+                : null,
+            onTap: () {
+              ref.read(localeProvider.notifier).state = null;
+              Navigator.pop(sheet);
+            },
+          ),
+          for (final e in supportedLanguages.entries)
+            ListTile(
+              title: Text(e.value),
+              trailing: current == e.key
+                  ? const Icon(Icons.check, color: DaysoffColors.brandTeal)
+                  : null,
+              onTap: () {
+                ref.read(localeProvider.notifier).state = Locale(e.key);
+                Navigator.pop(sheet);
+              },
+            ),
+        ],
+      ),
+    ),
+  );
 }
