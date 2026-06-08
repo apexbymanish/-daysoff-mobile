@@ -42,6 +42,27 @@ void main() {
     expect(find.text('5'), findsWidgets);
   });
 
+  testWidgets('multi-PTO bridge: "Take N days off" + all PTO days listed',
+      (tester) async {
+    // 2-PTO bridge: take Feb 19 + 20 for a 9-day Lunar New Year break.
+    final rec = SandwichRecord(
+      ptoDate: DateTime(2026, 2, 19),
+      ptoDates: [DateTime(2026, 2, 19), DateTime(2026, 2, 20)],
+      weekday: 'Thursday',
+      breakStart: DateTime(2026, 2, 14),
+      breakEnd: DateTime(2026, 2, 22),
+      breakLength: 9,
+      ptoCost: 2,
+      context: 'Korean New Year',
+    );
+    await tester.pumpWidget(_host(SandwichCard(record: rec)));
+    expect(find.textContaining('Take 2 days off'), findsOneWidget);
+    expect(find.textContaining('2 PTO'), findsOneWidget);
+    // Both PTO numerals (19, 20) render in the 9-cell ribbon.
+    expect(find.text('19'), findsWidgets);
+    expect(find.text('20'), findsWidgets);
+  });
+
   testWidgets('Save adds to savedBreaksProvider (length 1)', (tester) async {
     final container = ProviderContainer();
     addTearDown(container.dispose);

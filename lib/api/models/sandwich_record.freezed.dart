@@ -23,6 +23,8 @@ SandwichRecord _$SandwichRecordFromJson(Map<String, dynamic> json) {
 mixin _$SandwichRecord {
   @JsonKey(name: 'pto_date')
   DateTime get ptoDate => throw _privateConstructorUsedError;
+  @JsonKey(name: 'pto_dates')
+  List<DateTime> get ptoDates => throw _privateConstructorUsedError;
   String get weekday => throw _privateConstructorUsedError;
   @JsonKey(name: 'break_start')
   DateTime get breakStart => throw _privateConstructorUsedError;
@@ -53,6 +55,7 @@ abstract class $SandwichRecordCopyWith<$Res> {
   @useResult
   $Res call({
     @JsonKey(name: 'pto_date') DateTime ptoDate,
+    @JsonKey(name: 'pto_dates') List<DateTime> ptoDates,
     String weekday,
     @JsonKey(name: 'break_start') DateTime breakStart,
     @JsonKey(name: 'break_end') DateTime breakEnd,
@@ -78,6 +81,7 @@ class _$SandwichRecordCopyWithImpl<$Res, $Val extends SandwichRecord>
   @override
   $Res call({
     Object? ptoDate = null,
+    Object? ptoDates = null,
     Object? weekday = null,
     Object? breakStart = null,
     Object? breakEnd = null,
@@ -91,6 +95,10 @@ class _$SandwichRecordCopyWithImpl<$Res, $Val extends SandwichRecord>
                 ? _value.ptoDate
                 : ptoDate // ignore: cast_nullable_to_non_nullable
                       as DateTime,
+            ptoDates: null == ptoDates
+                ? _value.ptoDates
+                : ptoDates // ignore: cast_nullable_to_non_nullable
+                      as List<DateTime>,
             weekday: null == weekday
                 ? _value.weekday
                 : weekday // ignore: cast_nullable_to_non_nullable
@@ -132,6 +140,7 @@ abstract class _$$SandwichRecordImplCopyWith<$Res>
   @useResult
   $Res call({
     @JsonKey(name: 'pto_date') DateTime ptoDate,
+    @JsonKey(name: 'pto_dates') List<DateTime> ptoDates,
     String weekday,
     @JsonKey(name: 'break_start') DateTime breakStart,
     @JsonKey(name: 'break_end') DateTime breakEnd,
@@ -156,6 +165,7 @@ class __$$SandwichRecordImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? ptoDate = null,
+    Object? ptoDates = null,
     Object? weekday = null,
     Object? breakStart = null,
     Object? breakEnd = null,
@@ -169,6 +179,10 @@ class __$$SandwichRecordImplCopyWithImpl<$Res>
             ? _value.ptoDate
             : ptoDate // ignore: cast_nullable_to_non_nullable
                   as DateTime,
+        ptoDates: null == ptoDates
+            ? _value._ptoDates
+            : ptoDates // ignore: cast_nullable_to_non_nullable
+                  as List<DateTime>,
         weekday: null == weekday
             ? _value.weekday
             : weekday // ignore: cast_nullable_to_non_nullable
@@ -203,13 +217,15 @@ class __$$SandwichRecordImplCopyWithImpl<$Res>
 class _$SandwichRecordImpl implements _SandwichRecord {
   const _$SandwichRecordImpl({
     @JsonKey(name: 'pto_date') required this.ptoDate,
+    @JsonKey(name: 'pto_dates')
+    final List<DateTime> ptoDates = const <DateTime>[],
     required this.weekday,
     @JsonKey(name: 'break_start') required this.breakStart,
     @JsonKey(name: 'break_end') required this.breakEnd,
     @JsonKey(name: 'break_length') required this.breakLength,
     @JsonKey(name: 'pto_cost') required this.ptoCost,
     required this.context,
-  });
+  }) : _ptoDates = ptoDates;
 
   factory _$SandwichRecordImpl.fromJson(Map<String, dynamic> json) =>
       _$$SandwichRecordImplFromJson(json);
@@ -217,6 +233,15 @@ class _$SandwichRecordImpl implements _SandwichRecord {
   @override
   @JsonKey(name: 'pto_date')
   final DateTime ptoDate;
+  final List<DateTime> _ptoDates;
+  @override
+  @JsonKey(name: 'pto_dates')
+  List<DateTime> get ptoDates {
+    if (_ptoDates is EqualUnmodifiableListView) return _ptoDates;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_ptoDates);
+  }
+
   @override
   final String weekday;
   @override
@@ -236,7 +261,7 @@ class _$SandwichRecordImpl implements _SandwichRecord {
 
   @override
   String toString() {
-    return 'SandwichRecord(ptoDate: $ptoDate, weekday: $weekday, breakStart: $breakStart, breakEnd: $breakEnd, breakLength: $breakLength, ptoCost: $ptoCost, context: $context)';
+    return 'SandwichRecord(ptoDate: $ptoDate, ptoDates: $ptoDates, weekday: $weekday, breakStart: $breakStart, breakEnd: $breakEnd, breakLength: $breakLength, ptoCost: $ptoCost, context: $context)';
   }
 
   @override
@@ -245,6 +270,7 @@ class _$SandwichRecordImpl implements _SandwichRecord {
         (other.runtimeType == runtimeType &&
             other is _$SandwichRecordImpl &&
             (identical(other.ptoDate, ptoDate) || other.ptoDate == ptoDate) &&
+            const DeepCollectionEquality().equals(other._ptoDates, _ptoDates) &&
             (identical(other.weekday, weekday) || other.weekday == weekday) &&
             (identical(other.breakStart, breakStart) ||
                 other.breakStart == breakStart) &&
@@ -261,6 +287,7 @@ class _$SandwichRecordImpl implements _SandwichRecord {
   int get hashCode => Object.hash(
     runtimeType,
     ptoDate,
+    const DeepCollectionEquality().hash(_ptoDates),
     weekday,
     breakStart,
     breakEnd,
@@ -289,6 +316,7 @@ class _$SandwichRecordImpl implements _SandwichRecord {
 abstract class _SandwichRecord implements SandwichRecord {
   const factory _SandwichRecord({
     @JsonKey(name: 'pto_date') required final DateTime ptoDate,
+    @JsonKey(name: 'pto_dates') final List<DateTime> ptoDates,
     required final String weekday,
     @JsonKey(name: 'break_start') required final DateTime breakStart,
     @JsonKey(name: 'break_end') required final DateTime breakEnd,
@@ -303,6 +331,9 @@ abstract class _SandwichRecord implements SandwichRecord {
   @override
   @JsonKey(name: 'pto_date')
   DateTime get ptoDate;
+  @override
+  @JsonKey(name: 'pto_dates')
+  List<DateTime> get ptoDates;
   @override
   String get weekday;
   @override
