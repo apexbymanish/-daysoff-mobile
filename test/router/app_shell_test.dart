@@ -22,15 +22,15 @@ void main() {
     await tester.pumpAndSettle();
 
     // Custom 3-tab bar — labels are uppercase.
-    expect(find.text('HOLIDAYS'), findsWidgets);
-    expect(find.text('PLAN'), findsWidgets);
-    expect(find.text('SETTINGS'), findsWidgets);
+    expect(find.text('Holidays'), findsWidgets);
+    expect(find.text('Plan'), findsWidgets);
+    expect(find.text('Settings'), findsWidgets);
 
     // No Sandwich tab.
     expect(find.text('Sandwich'), findsNothing);
     expect(find.text('SANDWICH'), findsNothing);
 
-    await tester.tap(find.text('SETTINGS'));
+    await tester.tap(find.text('Settings'));
     await tester.pumpAndSettle();
     expect(find.byType(SettingsScreen), findsOneWidget);
   });

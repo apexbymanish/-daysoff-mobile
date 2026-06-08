@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:daysoff_mobile/l10n/app_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:daysoff_mobile/api/models/holiday.dart';
 import 'package:daysoff_mobile/screens/home/widgets/next_break_hero.dart';
@@ -12,7 +13,7 @@ void main() {
       name: 'Children\'s Day',
       source: 'library',
     );
-    await tester.pumpWidget(MaterialApp(
+    await tester.pumpWidget(MaterialApp(localizationsDelegates: AppL10n.localizationsDelegates, supportedLocales: AppL10n.supportedLocales, 
       home: Scaffold(
         body: NextBreakHero(next: next, onSeeDetails: () => tapped = true),
       ),

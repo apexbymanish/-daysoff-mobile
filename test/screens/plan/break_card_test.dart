@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:daysoff_mobile/l10n/app_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:daysoff_mobile/api/models/plan_trip.dart';
 import 'package:daysoff_mobile/screens/plan/widgets/break_card.dart';
@@ -12,7 +13,7 @@ PlanTrip _trip() => PlanTrip(
       anchors: const ['Chuseok'],
     );
 
-Widget _host(Widget child) => MaterialApp(home: Scaffold(body: child));
+Widget _host(Widget child) => MaterialApp(localizationsDelegates: AppL10n.localizationsDelegates, supportedLocales: AppL10n.supportedLocales, home: Scaffold(body: child));
 
 void main() {
   testWidgets('BreakCard shows length, range, PTO pill and anchor', (tester) async {

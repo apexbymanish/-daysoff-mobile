@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:daysoff_mobile/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:daysoff_mobile/api/api_client.dart';
@@ -91,7 +92,7 @@ void main() {
 
     await tester.pumpWidget(UncontrolledProviderScope(
       container: container,
-      child: const MaterialApp(home: PlanScreen()),
+      child: MaterialApp(localizationsDelegates: AppL10n.localizationsDelegates, supportedLocales: AppL10n.supportedLocales, home: PlanScreen()),
     ));
     await _settle(tester);
 
@@ -121,7 +122,7 @@ void main() {
 
     await tester.pumpWidget(UncontrolledProviderScope(
       container: container,
-      child: const MaterialApp(home: PlanScreen()),
+      child: MaterialApp(localizationsDelegates: AppL10n.localizationsDelegates, supportedLocales: AppL10n.supportedLocales, home: PlanScreen()),
     ));
     await _settle(tester);
     expect(api.sandwichBudgets.last, 15); // default budget

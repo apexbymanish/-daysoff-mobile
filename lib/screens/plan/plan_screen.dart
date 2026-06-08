@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 
 import '../../api/models/plan_response.dart';
 import '../../api/models/plan_trip.dart';
+import '../../l10n/app_localizations.dart';
 import '../../providers/plan_provider.dart';
 import '../../providers/plan_view_provider.dart';
 import '../../providers/preferences_provider.dart';
@@ -34,10 +35,11 @@ class PlanScreen extends ConsumerWidget {
     final weekend = ref.watch(weekendProvider);
     final view = ref.watch(planViewProvider);
     final month = ref.watch(planMonthProvider);
+    final l = AppL10n.of(context);
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Plan your year'),
+        title: Text(l.planTitle),
         actions: [
           IconButton(
             icon: const Icon(Icons.edit_outlined, size: 20),
@@ -102,6 +104,7 @@ class _ViewToggle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppL10n.of(context);
     return Container(
       padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
@@ -111,12 +114,12 @@ class _ViewToggle extends StatelessWidget {
       child: Row(
         children: [
           _Segment(
-            label: 'Length buffet',
+            label: l.lengthBuffet,
             isActive: selected == PlanView.buffet,
             onTap: () => onChanged(PlanView.buffet),
           ),
           _Segment(
-            label: 'Sandwich days',
+            label: l.sandwichDays,
             isActive: selected == PlanView.sandwich,
             onTap: () => onChanged(PlanView.sandwich),
           ),
@@ -238,6 +241,7 @@ class _SandwichView extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final month = ref.watch(planMonthProvider);
+    final l = AppL10n.of(context);
     final query = SandwichesQuery(
       country: country,
       year: year,
@@ -260,20 +264,20 @@ class _SandwichView extends ConsumerWidget {
             const SizedBox(height: 16),
             FilledButton(
               onPressed: () => ref.invalidate(sandwichesProvider(query)),
-              child: const Text('Retry'),
+              child: Text(l.retry),
             ),
           ],
         ),
       ),
       data: (resp) {
         if (resp.sandwiches.isEmpty) {
-          return const Center(
+          return Center(
             child: Padding(
-              padding: EdgeInsets.all(32),
+              padding: const EdgeInsets.all(32),
               child: Text(
-                'No sandwich days this year.',
+                l.noSandwichDaysThisYear,
                 textAlign: TextAlign.center,
-                style: TextStyle(
+                style: const TextStyle(
                     fontSize: 16, color: DaysoffColors.neutral700),
               ),
             ),
@@ -289,7 +293,7 @@ class _SandwichView extends ConsumerWidget {
             child: Padding(
               padding: const EdgeInsets.all(32),
               child: Text(
-                'No sandwich days in ${_monthName(month!)}.',
+                l.noSandwichDaysInMonth(_monthName(month!)),
                 textAlign: TextAlign.center,
                 style: const TextStyle(
                     fontSize: 16, color: DaysoffColors.neutral700),
@@ -300,11 +304,11 @@ class _SandwichView extends ConsumerWidget {
         return ListView(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
           children: [
-            const Padding(
-              padding: EdgeInsets.only(bottom: 8),
+            Padding(
+              padding: const EdgeInsets.only(bottom: 8),
               child: Text(
-                'Single workdays wedged between days off — take one, gain a long weekend.',
-                style: TextStyle(
+                l.sandwichHint,
+                style: const TextStyle(
                     fontSize: 14, color: DaysoffColors.neutral700, height: 1.5),
               ),
             ),
@@ -401,10 +405,11 @@ class _BuffetState extends State<_Buffet> {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppL10n.of(context);
     if (_trips.isEmpty) {
       final emptyMsg = widget.month != null
-          ? 'No break options in ${_monthName(widget.month!)}.'
-          : 'No breaks fit this budget. Try increasing it.';
+          ? l.noBreakOptionsInMonth(_monthName(widget.month!))
+          : l.noBreaksForBudget;
       return Center(
         child: Padding(
           padding: const EdgeInsets.all(32),

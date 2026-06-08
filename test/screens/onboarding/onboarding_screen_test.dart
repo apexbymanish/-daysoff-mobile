@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:daysoff_mobile/l10n/app_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:daysoff_mobile/screens/onboarding/onboarding_screen.dart';
@@ -12,7 +13,7 @@ void main() {
         GoRoute(path: '/', builder: (c, s) => const Scaffold(body: Text('HOME'))),
       ],
     );
-    await tester.pumpWidget(MaterialApp.router(routerConfig: router));
+    await tester.pumpWidget(MaterialApp.router(localizationsDelegates: AppL10n.localizationsDelegates, supportedLocales: AppL10n.supportedLocales, routerConfig: router));
     await tester.pumpAndSettle();
 
     expect(find.text('daysoff'), findsOneWidget);

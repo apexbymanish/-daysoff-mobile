@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:daysoff_mobile/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:daysoff_mobile/api/models/saved_break.dart';
@@ -7,8 +8,8 @@ import 'package:daysoff_mobile/screens/saved/saved_screen.dart';
 
 void main() {
   testWidgets('empty state when nothing saved', (tester) async {
-    await tester.pumpWidget(const ProviderScope(
-      child: MaterialApp(home: SavedScreen()),
+    await tester.pumpWidget(ProviderScope(
+      child: MaterialApp(localizationsDelegates: AppL10n.localizationsDelegates, supportedLocales: AppL10n.supportedLocales, home: SavedScreen()),
     ));
     await tester.pumpAndSettle();
     expect(find.textContaining('Nothing saved'), findsOneWidget);
@@ -24,7 +25,7 @@ void main() {
 
     await tester.pumpWidget(UncontrolledProviderScope(
       container: container,
-      child: const MaterialApp(home: SavedScreen()),
+      child: MaterialApp(localizationsDelegates: AppL10n.localizationsDelegates, supportedLocales: AppL10n.supportedLocales, home: SavedScreen()),
     ));
     await tester.pumpAndSettle();
 

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:daysoff_mobile/l10n/app_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:daysoff_mobile/api/models/holiday.dart';
 import 'package:daysoff_mobile/api/models/saved_break.dart';
@@ -6,7 +7,7 @@ import 'package:daysoff_mobile/screens/home/widgets/day_detail_sheet.dart';
 
 void main() {
   testWidgets('shows holiday name, news tag, and saved break', (tester) async {
-    await tester.pumpWidget(MaterialApp(
+    await tester.pumpWidget(MaterialApp(localizationsDelegates: AppL10n.localizationsDelegates, supportedLocales: AppL10n.supportedLocales, 
       home: Scaffold(
         body: Builder(
           builder: (context) => ElevatedButton(
@@ -33,7 +34,7 @@ void main() {
   });
 
   testWidgets('empty day shows nothing-on-this-day', (tester) async {
-    await tester.pumpWidget(MaterialApp(
+    await tester.pumpWidget(MaterialApp(localizationsDelegates: AppL10n.localizationsDelegates, supportedLocales: AppL10n.supportedLocales, 
       home: Scaffold(
         body: Builder(
           builder: (context) => ElevatedButton(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:daysoff_mobile/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:daysoff_mobile/providers/preferences_provider.dart';
@@ -10,7 +11,7 @@ void main() {
     addTearDown(c.dispose);
     await tester.pumpWidget(UncontrolledProviderScope(
       container: c,
-      child: const MaterialApp(home: Scaffold(body: PreferencesEditorSheet())),
+      child: MaterialApp(localizationsDelegates: AppL10n.localizationsDelegates, supportedLocales: AppL10n.supportedLocales, home: Scaffold(body: PreferencesEditorSheet())),
     ));
     return c;
   }

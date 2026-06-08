@@ -10,6 +10,7 @@ class StorageKeys {
   static const breakMin = 'break_min';
   static const breakMax = 'break_max';
   static const weekend = 'weekend';
+  static const language = 'language';
 }
 
 /// Tracks whether [GetStorage.init()] has completed.

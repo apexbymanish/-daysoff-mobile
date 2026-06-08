@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:daysoff_mobile/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:daysoff_mobile/api/models/sandwich_record.dart';
@@ -16,7 +17,7 @@ SandwichRecord _rec() => SandwichRecord(
     );
 
 Widget _host(Widget child) =>
-    ProviderScope(child: MaterialApp(home: Scaffold(body: child)));
+    ProviderScope(child: MaterialApp(localizationsDelegates: AppL10n.localizationsDelegates, supportedLocales: AppL10n.supportedLocales, home: Scaffold(body: child)));
 
 void main() {
   testWidgets('shows "Take … off" headline', (tester) async {
@@ -68,7 +69,7 @@ void main() {
     addTearDown(container.dispose);
     await tester.pumpWidget(UncontrolledProviderScope(
       container: container,
-      child: MaterialApp(home: Scaffold(body: SandwichCard(record: _rec()))),
+      child: MaterialApp(localizationsDelegates: AppL10n.localizationsDelegates, supportedLocales: AppL10n.supportedLocales, home: Scaffold(body: SandwichCard(record: _rec()))),
     ));
     await tester.tap(find.text('Save + remind'));
     await tester.pump();

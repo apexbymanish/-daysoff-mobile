@@ -6,6 +6,7 @@ import '../../../api/models/sandwich_record.dart';
 import '../../../api/models/saved_break.dart';
 import '../../../providers/saved_breaks_provider.dart';
 import '../../../theme/colors.dart';
+import '../../../l10n/app_localizations.dart';
 import '../../../theme/typography.dart';
 
 /// Redesigned 6.7 sandwich card: white tactile-card, day-ribbon, save button.
@@ -15,6 +16,7 @@ class SandwichCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l = AppL10n.of(context);
     final dayFmt = DateFormat('MMM d');
 
     // The PTO days to take. Falls back to the single primary date for any
@@ -23,7 +25,7 @@ class SandwichCard extends ConsumerWidget {
         record.ptoDates.isEmpty ? <DateTime>[record.ptoDate] : record.ptoDates;
     final ptoLabel = ptoDays.length == 1
         ? 'Take ${record.weekday} ${dayFmt.format(record.ptoDate)} off'
-        : 'Take ${ptoDays.length} days off';
+        : l.takeDaysOff(ptoDays.length);
 
     bool isPtoDay(DateTime d) => ptoDays.any((p) =>
         p.year == d.year && p.month == d.month && p.day == d.day);
@@ -182,10 +184,10 @@ class SandwichCard extends ConsumerWidget {
                             kind: 'sandwich',
                           ));
                       ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Saved')));
+                          SnackBar(content: Text(l.saved)));
                     },
                     icon: const Icon(Icons.bookmark, size: 20),
-                    label: const Text('Save + remind'),
+                    label: Text(l.saveAndRemind),
                   ),
                 ],
               ),

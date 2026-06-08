@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:daysoff_mobile/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:daysoff_mobile/auth/auth_controller.dart';
@@ -14,7 +15,7 @@ void main() {
           overrides: [
             tokenStoreProvider.overrideWithValue(InMemoryTokenStore()),
           ],
-          child: const MaterialApp(home: SettingsScreen()),
+          child: MaterialApp(localizationsDelegates: AppL10n.localizationsDelegates, supportedLocales: AppL10n.supportedLocales, home: SettingsScreen()),
         ),
       );
 
@@ -49,9 +50,11 @@ void main() {
     addTearDown(container.dispose);
     await tester.pumpWidget(UncontrolledProviderScope(
       container: container,
-      child: const MaterialApp(home: SettingsScreen()),
+      child: MaterialApp(localizationsDelegates: AppL10n.localizationsDelegates, supportedLocales: AppL10n.supportedLocales, home: SettingsScreen()),
     ));
 
+    await tester.ensureVisible(find.text('Dark'));
+    await tester.pumpAndSettle();
     await tester.tap(find.text('Dark'));
     await tester.pumpAndSettle();
 

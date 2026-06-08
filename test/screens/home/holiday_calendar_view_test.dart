@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:daysoff_mobile/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:daysoff_mobile/api/models/holiday.dart';
@@ -9,7 +10,7 @@ void main() {
   // ─── 1. Calendar renders ───────────────────────────────────────────────────
   testWidgets('renders the calendar widget', (tester) async {
     await tester.pumpWidget(ProviderScope(
-      child: MaterialApp(
+      child: MaterialApp(localizationsDelegates: AppL10n.localizationsDelegates, supportedLocales: AppL10n.supportedLocales, 
         home: Scaffold(
           body: HolidayCalendarView(
             holidays: const [],
@@ -25,7 +26,7 @@ void main() {
   // ─── 2. Holiday day shows sun marker ──────────────────────────────────────
   testWidgets('a holiday day shows a sun marker', (tester) async {
     await tester.pumpWidget(ProviderScope(
-      child: MaterialApp(
+      child: MaterialApp(localizationsDelegates: AppL10n.localizationsDelegates, supportedLocales: AppL10n.supportedLocales, 
         home: Scaffold(
           body: HolidayCalendarView(
             holidays: [
@@ -49,7 +50,7 @@ void main() {
       'tapping a holiday day updates the inline DaySummaryCard to show its name',
       (tester) async {
     await tester.pumpWidget(ProviderScope(
-      child: MaterialApp(
+      child: MaterialApp(localizationsDelegates: AppL10n.localizationsDelegates, supportedLocales: AppL10n.supportedLocales, 
         home: Scaffold(
           body: SingleChildScrollView(
             child: HolidayCalendarView(
@@ -80,7 +81,7 @@ void main() {
   testWidgets('legend shows free day, absorbed, and selected entries',
       (tester) async {
     await tester.pumpWidget(ProviderScope(
-      child: MaterialApp(
+      child: MaterialApp(localizationsDelegates: AppL10n.localizationsDelegates, supportedLocales: AppL10n.supportedLocales, 
         home: Scaffold(
           body: SingleChildScrollView(
             child: HolidayCalendarView(
@@ -108,7 +109,7 @@ void main() {
       source: 'library',
     );
     await tester.pumpWidget(ProviderScope(
-      child: MaterialApp(
+      child: MaterialApp(localizationsDelegates: AppL10n.localizationsDelegates, supportedLocales: AppL10n.supportedLocales, 
         home: Scaffold(
           body: DaySummaryCard(
             day: DateTime(2026, 9, 24),
@@ -128,7 +129,7 @@ void main() {
   testWidgets('DaySummaryCard shows nothing-on-this-day when no holiday',
       (tester) async {
     await tester.pumpWidget(ProviderScope(
-      child: MaterialApp(
+      child: MaterialApp(localizationsDelegates: AppL10n.localizationsDelegates, supportedLocales: AppL10n.supportedLocales, 
         home: Scaffold(
           body: DaySummaryCard(
             day: DateTime(2026, 3, 10),
@@ -153,7 +154,7 @@ void main() {
       source: 'library',
     );
     await tester.pumpWidget(ProviderScope(
-      child: MaterialApp(
+      child: MaterialApp(localizationsDelegates: AppL10n.localizationsDelegates, supportedLocales: AppL10n.supportedLocales, 
         home: Scaffold(
           body: DaySummaryCard(
             day: DateTime(2026, 1, 3),
@@ -178,7 +179,7 @@ void main() {
       source: 'library',
     );
     await tester.pumpWidget(ProviderScope(
-      child: MaterialApp(
+      child: MaterialApp(localizationsDelegates: AppL10n.localizationsDelegates, supportedLocales: AppL10n.supportedLocales, 
         home: Scaffold(
           body: DaySummaryCard(
             day: DateTime(2026, 1, 1),

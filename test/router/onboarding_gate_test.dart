@@ -60,6 +60,6 @@ void main() {
     // No Welcome CTA — we're on Home (inside the nav shell).
     expect(find.text('Get started'), findsNothing);
     // Custom 3-tab bar renders with uppercase labels.
-    expect(find.text('HOLIDAYS'), findsWidgets);
+    expect(find.text('Holidays'), findsWidgets);
   });
 }

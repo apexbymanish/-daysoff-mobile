@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../auth/auth_controller.dart';
+import '../../l10n/app_localizations.dart';
 import '../../theme/colors.dart';
 
 /// Combined login / register screen. Toggles between the two modes.
@@ -29,10 +30,11 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
   }
 
   Future<void> _submit() async {
+    final l = AppL10n.of(context);
     final email = _email.text.trim();
     final password = _password.text;
     if (email.isEmpty || password.length < 8) {
-      setState(() => _error = 'Enter an email and a password of 8+ characters.');
+      setState(() => _error = l.authErrorValidation);
       return;
     }
     setState(() {
@@ -53,8 +55,8 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
     } catch (_) {
       if (mounted) {
         setState(() => _error = _register
-            ? 'Could not create the account. The email may already be in use.'
-            : 'Invalid email or password.');
+            ? AppL10n.of(context).authErrorRegister
+            : AppL10n.of(context).authErrorCreds);
       }
     } finally {
       if (mounted) setState(() => _busy = false);
@@ -63,20 +65,22 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppL10n.of(context);
     return Scaffold(
-      appBar: AppBar(title: Text(_register ? 'Create account' : 'Sign in')),
+      appBar: AppBar(
+          title: Text(_register ? l.authCreateAccount : l.authSignIn)),
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.all(20),
           children: [
             Text(
-              _register ? 'Create your daysoff account' : 'Welcome back',
+              _register ? l.authCreateHeading : l.authWelcomeBack,
               style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w700),
             ),
             const SizedBox(height: 4),
-            const Text(
-              'Sync your saved breaks across devices.',
-              style: TextStyle(color: DaysoffColors.neutral700),
+            Text(
+              l.authTagline,
+              style: const TextStyle(color: DaysoffColors.neutral700),
             ),
             const SizedBox(height: 24),
             if (_register) ...[
@@ -84,9 +88,9 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                 key: const Key('auth_name'),
                 controller: _name,
                 textInputAction: TextInputAction.next,
-                decoration: const InputDecoration(
-                  labelText: 'Name (optional)',
-                  border: OutlineInputBorder(),
+                decoration: InputDecoration(
+                  labelText: l.fieldNameOptional,
+                  border: const OutlineInputBorder(),
                 ),
               ),
               const SizedBox(height: 12),
@@ -97,9 +101,9 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
               keyboardType: TextInputType.emailAddress,
               autocorrect: false,
               textInputAction: TextInputAction.next,
-              decoration: const InputDecoration(
-                labelText: 'Email',
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                labelText: l.fieldEmail,
+                border: const OutlineInputBorder(),
               ),
             ),
             const SizedBox(height: 12),
@@ -109,9 +113,9 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
               obscureText: true,
               textInputAction: TextInputAction.done,
               onSubmitted: (_) => _busy ? null : _submit(),
-              decoration: const InputDecoration(
-                labelText: 'Password (8+ characters)',
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                labelText: l.fieldPassword,
+                border: const OutlineInputBorder(),
               ),
             ),
             if (_error != null) ...[
@@ -133,7 +137,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                       child: CircularProgressIndicator(
                           strokeWidth: 2, color: Colors.white),
                     )
-                  : Text(_register ? 'Create account' : 'Sign in'),
+                  : Text(_register ? l.authCreateAccount : l.authSignIn),
             ),
             const SizedBox(height: 12),
             TextButton(
@@ -145,8 +149,8 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                         _error = null;
                       }),
               child: Text(_register
-                  ? 'Have an account? Sign in'
-                  : "New here? Create an account"),
+                  ? l.authToggleToLogin
+                  : l.authToggleToRegister),
             ),
           ],
         ),
