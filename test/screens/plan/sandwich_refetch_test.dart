@@ -16,15 +16,20 @@ class _FakeApiClient extends ApiClient {
   _FakeApiClient() : super(dio: null);
 
   final List<List<String>> sandwichCalls = [];
+  final List<int?> sandwichBudgets = [];
 
   @override
   Future<SandwichesResponse> getSandwiches({
     required String country,
     required int year,
     List<String>? workweek,
+    int? budget,
+    int? minLength,
+    int? maxLength,
   }) async {
     final ww = workweek ?? const [];
     sandwichCalls.add(ww);
+    sandwichBudgets.add(budget);
     final isMonWed = ww.contains('mon');
     return SandwichesResponse(
       country: country,
@@ -103,5 +108,27 @@ void main() {
     // Both weekends were actually requested from the backend.
     expect(api.sandwichCalls.any((w) => w.contains('sun')), isTrue);
     expect(api.sandwichCalls.any((w) => w.contains('mon')), isTrue);
+  });
+
+  testWidgets('sandwich list refetches when the PTO budget changes',
+      (tester) async {
+    final api = _FakeApiClient();
+    final container = ProviderContainer(overrides: [
+      apiClientProvider.overrideWith((ref) => api),
+      planViewProvider.overrideWith((ref) => PlanView.sandwich),
+    ]);
+    addTearDown(container.dispose);
+
+    await tester.pumpWidget(UncontrolledProviderScope(
+      container: container,
+      child: const MaterialApp(home: PlanScreen()),
+    ));
+    await _settle(tester);
+    expect(api.sandwichBudgets.last, 15); // default budget
+
+    // Lowering the budget must re-query /v1/sandwiches with the new budget.
+    container.read(ptoBudgetProvider.notifier).state = 2;
+    await _settle(tester);
+    expect(api.sandwichBudgets.last, 2);
   });
 }

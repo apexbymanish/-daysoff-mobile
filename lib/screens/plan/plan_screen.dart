@@ -82,6 +82,8 @@ class PlanScreen extends ConsumerWidget {
                       country: country,
                       year: year,
                       weekend: weekend,
+                      budget: budget,
+                      range: range,
                     ),
             ),
           ],
@@ -224,16 +226,26 @@ class _SandwichView extends ConsumerWidget {
     required this.country,
     required this.year,
     required this.weekend,
+    required this.budget,
+    required this.range,
   });
   final String country;
   final int year;
   final List<String> weekend;
+  final int budget;
+  final BreakLengthRange range;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final month = ref.watch(planMonthProvider);
-    final query =
-        SandwichesQuery(country: country, year: year, workweek: weekend);
+    final query = SandwichesQuery(
+      country: country,
+      year: year,
+      workweek: weekend,
+      budget: budget,
+      minLength: range.min,
+      maxLength: range.max,
+    );
     final async = ref.watch(sandwichesProvider(query));
     return async.when(
       loading: () => const Center(child: CircularProgressIndicator()),

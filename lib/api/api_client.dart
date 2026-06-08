@@ -73,6 +73,9 @@ class ApiClient {
     required String country,
     required int year,
     List<String>? workweek,
+    int? budget,
+    int? minLength,
+    int? maxLength,
   }) async {
     final response = await _dio.get<Map<String, dynamic>>(
       Endpoints.sandwiches,
@@ -80,6 +83,9 @@ class ApiClient {
         'country': country,
         'year': year,
         if (workweek != null && workweek.isNotEmpty) 'workweek': workweek.join(','),
+        'budget': ?budget,
+        'min_length': ?minLength,
+        'max_length': ?maxLength,
       },
     );
     return SandwichesResponse.fromJson(response.data!);

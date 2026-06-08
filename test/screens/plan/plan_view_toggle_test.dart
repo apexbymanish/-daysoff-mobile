@@ -21,6 +21,9 @@ class _FakeApiClient extends ApiClient {
     required String country,
     required int year,
     List<String>? workweek,
+    int? budget,
+    int? minLength,
+    int? maxLength,
   }) async =>
       SandwichesResponse(
         country: country,
