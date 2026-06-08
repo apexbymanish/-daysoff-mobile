@@ -23,6 +23,7 @@ class _FakeApiClient extends ApiClient {
     int budget = 15,
     int minLength = 3,
     int maxLength = 10,
+    int? month,
     List<String>? workweek,
   }) async =>
       PlanResponse(
@@ -62,6 +63,9 @@ class _FakeApiClient extends ApiClient {
     required String country,
     required int year,
     List<String>? workweek,
+    int? budget,
+    int? minLength,
+    int? maxLength,
   }) async =>
       SandwichesResponse(
         country: country,

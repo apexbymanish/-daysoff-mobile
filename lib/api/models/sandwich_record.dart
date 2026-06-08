@@ -8,6 +8,7 @@ part 'sandwich_record.g.dart';
 class SandwichRecord with _$SandwichRecord {
   const factory SandwichRecord({
     @JsonKey(name: 'pto_date') required DateTime ptoDate,
+    @JsonKey(name: 'pto_dates') @Default(<DateTime>[]) List<DateTime> ptoDates,
     required String weekday,
     @JsonKey(name: 'break_start') required DateTime breakStart,
     @JsonKey(name: 'break_end') required DateTime breakEnd,

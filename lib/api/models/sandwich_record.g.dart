@@ -9,6 +9,11 @@ part of 'sandwich_record.dart';
 _$SandwichRecordImpl _$$SandwichRecordImplFromJson(Map<String, dynamic> json) =>
     _$SandwichRecordImpl(
       ptoDate: DateTime.parse(json['pto_date'] as String),
+      ptoDates:
+          (json['pto_dates'] as List<dynamic>?)
+              ?.map((e) => DateTime.parse(e as String))
+              .toList() ??
+          const <DateTime>[],
       weekday: json['weekday'] as String,
       breakStart: DateTime.parse(json['break_start'] as String),
       breakEnd: DateTime.parse(json['break_end'] as String),
@@ -21,6 +26,7 @@ Map<String, dynamic> _$$SandwichRecordImplToJson(
   _$SandwichRecordImpl instance,
 ) => <String, dynamic>{
   'pto_date': instance.ptoDate.toIso8601String(),
+  'pto_dates': instance.ptoDates.map((e) => e.toIso8601String()).toList(),
   'weekday': instance.weekday,
   'break_start': instance.breakStart.toIso8601String(),
   'break_end': instance.breakEnd.toIso8601String(),

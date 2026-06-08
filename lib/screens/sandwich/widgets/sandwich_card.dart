@@ -17,7 +17,16 @@ class SandwichCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final dayFmt = DateFormat('MMM d');
 
-    final ptoLabel = 'Take ${record.weekday} ${dayFmt.format(record.ptoDate)} off';
+    // The PTO days to take. Falls back to the single primary date for any
+    // response that predates pto_dates.
+    final ptoDays =
+        record.ptoDates.isEmpty ? <DateTime>[record.ptoDate] : record.ptoDates;
+    final ptoLabel = ptoDays.length == 1
+        ? 'Take ${record.weekday} ${dayFmt.format(record.ptoDate)} off'
+        : 'Take ${ptoDays.length} days off';
+
+    bool isPtoDay(DateTime d) => ptoDays.any((p) =>
+        p.year == d.year && p.month == d.month && p.day == d.day);
 
     // Build day cells from breakStart..breakEnd inclusive
     final days = <DateTime>[];
@@ -124,7 +133,8 @@ class SandwichCard extends ConsumerWidget {
               children: [
                 for (var i = 0; i < days.length; i++) ...[
                   if (i > 0) const SizedBox(width: 6),
-                  Expanded(child: _DayCell(day: days[i], ptoDate: record.ptoDate)),
+                  Expanded(
+                      child: _DayCell(day: days[i], isPto: isPtoDay(days[i]))),
                 ],
               ],
             ),
@@ -188,20 +198,14 @@ class SandwichCard extends ConsumerWidget {
 }
 
 class _DayCell extends StatelessWidget {
-  const _DayCell({required this.day, required this.ptoDate});
+  const _DayCell({required this.day, required this.isPto});
   final DateTime day;
-  final DateTime ptoDate;
-
-  bool get _isPto =>
-      day.year == ptoDate.year &&
-      day.month == ptoDate.month &&
-      day.day == ptoDate.day;
+  final bool isPto;
 
   @override
   Widget build(BuildContext context) {
     final weekdayFmt = DateFormat('EEE');
     final numFmt = DateFormat('d');
-    final isPto = _isPto;
 
     final bgColor = isPto
         ? DaysoffColors.brandTeal.withValues(alpha: 0.06)

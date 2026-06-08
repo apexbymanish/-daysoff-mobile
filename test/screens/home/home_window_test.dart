@@ -53,6 +53,7 @@ class _FakeApiClientWithPlan extends ApiClient {
     int budget = 15,
     int minLength = 3,
     int maxLength = 10,
+    int? month,
     List<String>? workweek,
   }) async =>
       PlanResponse(
@@ -100,6 +101,7 @@ class _FakeApiClientPastLongest extends ApiClient {
     int budget = 15,
     int minLength = 3,
     int maxLength = 10,
+    int? month,
     List<String>? workweek,
   }) async =>
       PlanResponse(
@@ -154,6 +156,7 @@ class _FakeApiClientPlanError extends ApiClient {
     int budget = 15,
     int minLength = 3,
     int maxLength = 10,
+    int? month,
     List<String>? workweek,
   }) async =>
       throw Exception('plan error → cap = year-end');
