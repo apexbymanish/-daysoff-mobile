@@ -324,7 +324,7 @@ class _Buffet extends StatefulWidget {
 class _BuffetState extends State<_Buffet> {
   late List<PlanTrip> _trips;
   late PlanTrip? _best;
-  late final PageController _pageController;
+  late PageController _pageController;
   late int _currentPage;
 
   void _recompute() {
@@ -348,9 +348,16 @@ class _BuffetState extends State<_Buffet> {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.month != widget.month ||
         oldWidget.response != widget.response) {
-      setState(_recompute);
-      _currentPage = 0;
-      _pageController.jumpToPage(0);
+      setState(() {
+        _recompute();
+        _currentPage = 0;
+        // Recreate the controller rather than jumpToPage: when the new filter
+        // yields no trips, no PageView is built, so the controller is never
+        // attached and jumpToPage(0) would assert. A fresh controller also
+        // avoids a stale page index when the new list is shorter.
+        _pageController.dispose();
+        _pageController = PageController(viewportFraction: 0.85, initialPage: 0);
+      });
     }
   }
 
