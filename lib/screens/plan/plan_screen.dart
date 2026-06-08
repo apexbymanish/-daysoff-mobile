@@ -204,6 +204,7 @@ class _BuffetView extends StatelessWidget {
       budget: budget,
       minLength: range.min,
       maxLength: range.max,
+      month: month,
       workweek: weekend,
     );
     final planAsync = ref.watch(planProvider(query));

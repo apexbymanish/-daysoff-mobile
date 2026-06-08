@@ -11,6 +11,7 @@ class PlanQuery {
     this.budget = 15,
     this.minLength = 3,
     this.maxLength = 10,
+    this.month,
     this.workweek = const [],
   });
 
@@ -19,6 +20,10 @@ class PlanQuery {
   final int budget;
   final int minLength;
   final int maxLength;
+
+  /// When set (1..12), the backend anchors results to breaks starting in this
+  /// month; null requests the global best-per-length menu.
+  final int? month;
   final List<String> workweek;
 
   @override
@@ -29,11 +34,12 @@ class PlanQuery {
       other.budget == budget &&
       other.minLength == minLength &&
       other.maxLength == maxLength &&
+      other.month == month &&
       _listEq(other.workweek, workweek);
 
   @override
-  int get hashCode =>
-      Object.hash(country, year, budget, minLength, maxLength, Object.hashAll(workweek));
+  int get hashCode => Object.hash(
+      country, year, budget, minLength, maxLength, month, Object.hashAll(workweek));
 }
 
 bool _listEq(List<String> a, List<String> b) {
@@ -53,6 +59,7 @@ final planProvider = FutureProvider.family<PlanResponse, PlanQuery>((ref, q) {
     budget: q.budget,
     minLength: q.minLength,
     maxLength: q.maxLength,
+    month: q.month,
     workweek: q.workweek,
   );
 });

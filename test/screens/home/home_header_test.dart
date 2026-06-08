@@ -23,6 +23,7 @@ class _FakeApiClient extends ApiClient {
     int budget = 15,
     int minLength = 3,
     int maxLength = 10,
+    int? month,
     List<String>? workweek,
   }) async =>
       throw Exception('no plan in test');
