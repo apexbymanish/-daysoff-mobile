@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 
 import '../../api/models/plan_response.dart';
 import '../../api/models/plan_trip.dart';
@@ -17,6 +18,7 @@ import '../home/widgets/scenery.dart';
 import '../sandwich/widgets/efficiency_insight.dart';
 import '../sandwich/widgets/sandwich_card.dart';
 import 'widgets/break_card.dart';
+import 'widgets/month_strip.dart';
 import 'widgets/plan_filter_chips.dart';
 import 'widgets/best_value_banner.dart';
 
@@ -31,6 +33,7 @@ class PlanScreen extends ConsumerWidget {
     final range = ref.watch(breakLengthProvider);
     final weekend = ref.watch(weekendProvider);
     final view = ref.watch(planViewProvider);
+    final month = ref.watch(planMonthProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -61,6 +64,8 @@ class PlanScreen extends ConsumerWidget {
                     ref.read(planViewProvider.notifier).state = v,
               ),
             ),
+            // Month filter strip (visible in both views)
+            const MonthStrip(),
             // Content area
             Expanded(
               child: view == PlanView.buffet
@@ -71,6 +76,7 @@ class PlanScreen extends ConsumerWidget {
                       range: range,
                       weekend: weekend,
                       ref: ref,
+                      month: month,
                     )
                   : _SandwichView(
                       country: country,
@@ -180,6 +186,7 @@ class _BuffetView extends StatelessWidget {
     required this.range,
     required this.weekend,
     required this.ref,
+    required this.month,
   });
   final String country;
   final int year;
@@ -187,6 +194,7 @@ class _BuffetView extends StatelessWidget {
   final BreakLengthRange range;
   final List<String> weekend;
   final WidgetRef ref;
+  final int? month;
 
   @override
   Widget build(BuildContext context) {
@@ -203,7 +211,7 @@ class _BuffetView extends StatelessWidget {
       loading: () => const Center(child: CircularProgressIndicator()),
       error: (e, _) =>
           _PlanError(onRetry: () => ref.invalidate(planProvider(query))),
-      data: (resp) => _Buffet(response: resp),
+      data: (resp) => _Buffet(response: resp, month: month),
     );
   }
 }
@@ -222,6 +230,7 @@ class _SandwichView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final month = ref.watch(planMonthProvider);
     final query =
         SandwichesQuery(country: country, year: year, workweek: weekend);
     final async = ref.watch(sandwichesProvider(query));
@@ -257,6 +266,24 @@ class _SandwichView extends ConsumerWidget {
             ),
           );
         }
+        final filtered = month == null
+            ? resp.sandwiches
+            : resp.sandwiches
+                .where((s) => s.ptoDate.month == month)
+                .toList();
+        if (filtered.isEmpty) {
+          return Center(
+            child: Padding(
+              padding: const EdgeInsets.all(32),
+              child: Text(
+                'No sandwich days in ${_monthName(month!)}.',
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                    fontSize: 16, color: DaysoffColors.neutral700),
+              ),
+            ),
+          );
+        }
         return ListView(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
           children: [
@@ -268,9 +295,9 @@ class _SandwichView extends ConsumerWidget {
                     fontSize: 14, color: DaysoffColors.neutral700, height: 1.5),
               ),
             ),
-            for (final s in resp.sandwiches) SandwichCard(record: s),
+            for (final s in filtered) SandwichCard(record: s),
             const SizedBox(height: 8),
-            EfficiencyInsight(records: resp.sandwiches),
+            EfficiencyInsight(records: filtered),
             const SizedBox(height: 32),
           ],
         );
@@ -279,34 +306,52 @@ class _SandwichView extends ConsumerWidget {
   }
 }
 
+// ── Helpers ────────────────────────────────────────────────────────────────────
+
+String _monthName(int m) => DateFormat('MMMM').format(DateTime(2000, m));
+
 // ── Buffet (carousel) widget ───────────────────────────────────────────────────
 
 class _Buffet extends StatefulWidget {
-  const _Buffet({required this.response});
+  const _Buffet({required this.response, required this.month});
   final PlanResponse response;
+  final int? month;
 
   @override
   State<_Buffet> createState() => _BuffetState();
 }
 
 class _BuffetState extends State<_Buffet> {
-  late final List<PlanTrip> _trips;
-  late final PlanTrip? _best;
-  late final int _initialPage;
+  late List<PlanTrip> _trips;
+  late PlanTrip? _best;
   late final PageController _pageController;
   late int _currentPage;
+
+  void _recompute() {
+    _trips = _bestPerLength(widget.response, widget.month);
+    _best = bestValueTrip(_trips);
+  }
 
   @override
   void initState() {
     super.initState();
-    _trips = _bestPerLength(widget.response);
-    _best = bestValueTrip(_trips);
+    _recompute();
     // Open on the first (longest) option; the best-value badge still marks
     // whichever option is the best value, wherever it sits.
-    _initialPage = 0;
-    _currentPage = _initialPage;
+    _currentPage = 0;
     _pageController =
-        PageController(viewportFraction: 0.85, initialPage: _initialPage);
+        PageController(viewportFraction: 0.85, initialPage: 0);
+  }
+
+  @override
+  void didUpdateWidget(_Buffet oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.month != widget.month ||
+        oldWidget.response != widget.response) {
+      setState(_recompute);
+      _currentPage = 0;
+      _pageController.jumpToPage(0);
+    }
   }
 
   @override
@@ -315,13 +360,16 @@ class _BuffetState extends State<_Buffet> {
     super.dispose();
   }
 
-  /// The best break for each length, sorted **longest-first**, capped at the
-  /// top 8 options.
-  static List<PlanTrip> _bestPerLength(PlanResponse response) {
+  /// The best break for each length, filtered by [month] (null = all),
+  /// sorted **longest-first**, capped at the top 8 options.
+  static List<PlanTrip> _bestPerLength(PlanResponse response, int? month) {
     final best = [
       for (final list in response.resultsByLength.values)
         if (list.isNotEmpty) list.first,
-    ]..sort((a, b) {
+    ]
+        .where((t) => month == null || t.breakStart.month == month)
+        .toList()
+      ..sort((a, b) {
         final byLength = b.breakLength.compareTo(a.breakLength); // longest first
         if (byLength != 0) return byLength;
         final byPto = a.ptoCost.compareTo(b.ptoCost); // then fewer PTO
@@ -334,25 +382,30 @@ class _BuffetState extends State<_Buffet> {
   @override
   Widget build(BuildContext context) {
     if (_trips.isEmpty) {
-      return const Center(
+      final emptyMsg = widget.month != null
+          ? 'No break options in ${_monthName(widget.month!)}.'
+          : 'No breaks fit this budget. Try increasing it.';
+      return Center(
         child: Padding(
-          padding: EdgeInsets.all(32),
+          padding: const EdgeInsets.all(32),
           child: Text(
-            'No breaks fit this budget. Try increasing it.',
+            emptyMsg,
             textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 16, color: DaysoffColors.neutral700),
+            style: const TextStyle(
+                fontSize: 16, color: DaysoffColors.neutral700),
           ),
         ),
       );
     }
 
+    final best = _best;
     return ListView(
       children: [
         // Best value banner
-        if (_best != null)
+        if (best != null)
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: BestValueBanner(trip: _best),
+            child: BestValueBanner(trip: best),
           ),
         const SizedBox(height: 16),
         // Carousel
@@ -364,7 +417,7 @@ class _BuffetState extends State<_Buffet> {
             onPageChanged: (i) => setState(() => _currentPage = i),
             itemBuilder: (context, i) {
               final trip = _trips[i];
-              final isBest = trip == _best;
+              final isBest = trip == best;
               final isFocused = i == _currentPage;
               return AnimatedScale(
                 scale: isFocused ? 1.0 : 0.93,
