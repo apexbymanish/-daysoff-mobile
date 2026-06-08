@@ -14,6 +14,12 @@ _$SavedBreakImpl _$$SavedBreakImplFromJson(Map<String, dynamic> json) =>
       end: DateTime.parse(json['end'] as String),
       ptoCost: (json['ptoCost'] as num).toInt(),
       kind: json['kind'] as String,
+      updatedAt: json['updatedAt'] == null
+          ? null
+          : DateTime.parse(json['updatedAt'] as String),
+      deletedAt: json['deletedAt'] == null
+          ? null
+          : DateTime.parse(json['deletedAt'] as String),
     );
 
 Map<String, dynamic> _$$SavedBreakImplToJson(_$SavedBreakImpl instance) =>
@@ -24,4 +30,6 @@ Map<String, dynamic> _$$SavedBreakImplToJson(_$SavedBreakImpl instance) =>
       'end': instance.end.toIso8601String(),
       'ptoCost': instance.ptoCost,
       'kind': instance.kind,
+      'updatedAt': instance.updatedAt?.toIso8601String(),
+      'deletedAt': instance.deletedAt?.toIso8601String(),
     };

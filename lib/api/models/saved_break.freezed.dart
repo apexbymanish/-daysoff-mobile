@@ -26,7 +26,10 @@ mixin _$SavedBreak {
   DateTime get start => throw _privateConstructorUsedError;
   DateTime get end => throw _privateConstructorUsedError;
   int get ptoCost => throw _privateConstructorUsedError;
-  String get kind => throw _privateConstructorUsedError;
+  String get kind => throw _privateConstructorUsedError; // 'break' | 'sandwich'
+  // Sync metadata (null for purely-local, never-synced breaks).
+  DateTime? get updatedAt => throw _privateConstructorUsedError;
+  DateTime? get deletedAt => throw _privateConstructorUsedError;
 
   /// Serializes this SavedBreak to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -52,6 +55,8 @@ abstract class $SavedBreakCopyWith<$Res> {
     DateTime end,
     int ptoCost,
     String kind,
+    DateTime? updatedAt,
+    DateTime? deletedAt,
   });
 }
 
@@ -76,6 +81,8 @@ class _$SavedBreakCopyWithImpl<$Res, $Val extends SavedBreak>
     Object? end = null,
     Object? ptoCost = null,
     Object? kind = null,
+    Object? updatedAt = freezed,
+    Object? deletedAt = freezed,
   }) {
     return _then(
       _value.copyWith(
@@ -103,6 +110,14 @@ class _$SavedBreakCopyWithImpl<$Res, $Val extends SavedBreak>
                 ? _value.kind
                 : kind // ignore: cast_nullable_to_non_nullable
                       as String,
+            updatedAt: freezed == updatedAt
+                ? _value.updatedAt
+                : updatedAt // ignore: cast_nullable_to_non_nullable
+                      as DateTime?,
+            deletedAt: freezed == deletedAt
+                ? _value.deletedAt
+                : deletedAt // ignore: cast_nullable_to_non_nullable
+                      as DateTime?,
           )
           as $Val,
     );
@@ -125,6 +140,8 @@ abstract class _$$SavedBreakImplCopyWith<$Res>
     DateTime end,
     int ptoCost,
     String kind,
+    DateTime? updatedAt,
+    DateTime? deletedAt,
   });
 }
 
@@ -148,6 +165,8 @@ class __$$SavedBreakImplCopyWithImpl<$Res>
     Object? end = null,
     Object? ptoCost = null,
     Object? kind = null,
+    Object? updatedAt = freezed,
+    Object? deletedAt = freezed,
   }) {
     return _then(
       _$SavedBreakImpl(
@@ -175,6 +194,14 @@ class __$$SavedBreakImplCopyWithImpl<$Res>
             ? _value.kind
             : kind // ignore: cast_nullable_to_non_nullable
                   as String,
+        updatedAt: freezed == updatedAt
+            ? _value.updatedAt
+            : updatedAt // ignore: cast_nullable_to_non_nullable
+                  as DateTime?,
+        deletedAt: freezed == deletedAt
+            ? _value.deletedAt
+            : deletedAt // ignore: cast_nullable_to_non_nullable
+                  as DateTime?,
       ),
     );
   }
@@ -190,6 +217,8 @@ class _$SavedBreakImpl implements _SavedBreak {
     required this.end,
     required this.ptoCost,
     required this.kind,
+    this.updatedAt,
+    this.deletedAt,
   });
 
   factory _$SavedBreakImpl.fromJson(Map<String, dynamic> json) =>
@@ -207,10 +236,16 @@ class _$SavedBreakImpl implements _SavedBreak {
   final int ptoCost;
   @override
   final String kind;
+  // 'break' | 'sandwich'
+  // Sync metadata (null for purely-local, never-synced breaks).
+  @override
+  final DateTime? updatedAt;
+  @override
+  final DateTime? deletedAt;
 
   @override
   String toString() {
-    return 'SavedBreak(id: $id, label: $label, start: $start, end: $end, ptoCost: $ptoCost, kind: $kind)';
+    return 'SavedBreak(id: $id, label: $label, start: $start, end: $end, ptoCost: $ptoCost, kind: $kind, updatedAt: $updatedAt, deletedAt: $deletedAt)';
   }
 
   @override
@@ -223,13 +258,26 @@ class _$SavedBreakImpl implements _SavedBreak {
             (identical(other.start, start) || other.start == start) &&
             (identical(other.end, end) || other.end == end) &&
             (identical(other.ptoCost, ptoCost) || other.ptoCost == ptoCost) &&
-            (identical(other.kind, kind) || other.kind == kind));
+            (identical(other.kind, kind) || other.kind == kind) &&
+            (identical(other.updatedAt, updatedAt) ||
+                other.updatedAt == updatedAt) &&
+            (identical(other.deletedAt, deletedAt) ||
+                other.deletedAt == deletedAt));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, id, label, start, end, ptoCost, kind);
+  int get hashCode => Object.hash(
+    runtimeType,
+    id,
+    label,
+    start,
+    end,
+    ptoCost,
+    kind,
+    updatedAt,
+    deletedAt,
+  );
 
   /// Create a copy of SavedBreak
   /// with the given fields replaced by the non-null parameter values.
@@ -253,6 +301,8 @@ abstract class _SavedBreak implements SavedBreak {
     required final DateTime end,
     required final int ptoCost,
     required final String kind,
+    final DateTime? updatedAt,
+    final DateTime? deletedAt,
   }) = _$SavedBreakImpl;
 
   factory _SavedBreak.fromJson(Map<String, dynamic> json) =
@@ -269,7 +319,12 @@ abstract class _SavedBreak implements SavedBreak {
   @override
   int get ptoCost;
   @override
-  String get kind;
+  String get kind; // 'break' | 'sandwich'
+  // Sync metadata (null for purely-local, never-synced breaks).
+  @override
+  DateTime? get updatedAt;
+  @override
+  DateTime? get deletedAt;
 
   /// Create a copy of SavedBreak
   /// with the given fields replaced by the non-null parameter values.

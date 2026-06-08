@@ -12,6 +12,9 @@ class SavedBreak with _$SavedBreak {
     required DateTime end,
     required int ptoCost,
     required String kind, // 'break' | 'sandwich'
+    // Sync metadata (null for purely-local, never-synced breaks).
+    DateTime? updatedAt,
+    DateTime? deletedAt,
   }) = _SavedBreak;
 
   factory SavedBreak.fromJson(Map<String, dynamic> json) =>

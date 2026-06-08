@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../auth/auth_controller.dart';
 import '../../core/country_flag.dart';
 import '../../providers/preferences_provider.dart';
 import '../../providers/selection_provider.dart';
@@ -82,26 +83,9 @@ class SettingsScreen extends ConsumerWidget {
               ),
             ),
 
-            // ── ACCOUNT (disabled placeholders) ──────────────────────────
+            // ── ACCOUNT ──────────────────────────────────────────────────
             _SectionHeader('ACCOUNT'),
-            Opacity(
-              opacity: 0.5,
-              child: _SettingsCard(
-                label: 'Profile',
-                value: '',
-                onTap: null,
-                showChevron: false,
-                trailing: const Icon(
-                  Icons.person,
-                  color: DaysoffColors.neutral500,
-                ),
-              ),
-            ),
-            const SizedBox(height: 8),
-            Opacity(
-              opacity: 0.5,
-              child: _SignOutCard(),
-            ),
+            const _AccountSection(),
 
             // ── FOOTER ───────────────────────────────────────────────────
             const SizedBox(height: 32),
@@ -267,32 +251,110 @@ class _ThemeCard extends StatelessWidget {
   }
 }
 
-// ─── _SignOutCard ──────────────────────────────────────────────────────────
+// ─── _AccountSection ───────────────────────────────────────────────────────
 
-class _SignOutCard extends StatelessWidget {
+class _AccountSection extends ConsumerWidget {
+  const _AccountSection();
+
   @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: DaysoffColors.outlineVariant),
-        boxShadow: const [
-          BoxShadow(
-            color: Color(0x0A000000),
-            blurRadius: 4,
-            offset: Offset(0, 1),
-          ),
+  Widget build(BuildContext context, WidgetRef ref) {
+    final auth = ref.watch(authControllerProvider);
+    return auth.when(
+      loading: () => _SettingsCard(
+          label: 'Account', value: 'Loading…', showChevron: false),
+      error: (_, _) => _SettingsCard(
+        label: 'Sign in / Create account',
+        value: 'Sync your saved breaks across devices',
+        onTap: () => context.push(AppRoutes.auth),
+      ),
+      data: (state) {
+        if (!state.isAuthenticated) {
+          return _SettingsCard(
+            label: 'Sign in / Create account',
+            value: 'Sync your saved breaks across devices',
+            onTap: () => context.push(AppRoutes.auth),
+          );
+        }
+        final user = state.user!;
+        return Column(
+          children: [
+            _SettingsCard(
+              label: user.displayName?.isNotEmpty == true
+                  ? user.displayName!
+                  : 'Signed in',
+              value: '${user.email} · sync on',
+              showChevron: false,
+              trailing: const Icon(Icons.cloud_done, color: DaysoffColors.brandTeal),
+            ),
+            const SizedBox(height: 8),
+            _DangerCard(
+              label: 'Log out',
+              onTap: () =>
+                  ref.read(authControllerProvider.notifier).logout(),
+            ),
+            const SizedBox(height: 8),
+            _DangerCard(
+              label: 'Delete account',
+              onTap: () => _confirmDelete(context, ref),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _confirmDelete(BuildContext context, WidgetRef ref) async {
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (c) => AlertDialog(
+        title: const Text('Delete account?'),
+        content: const Text(
+            'This permanently deletes your account and synced saved breaks.'),
+        actions: [
+          TextButton(
+              onPressed: () => Navigator.pop(c, false),
+              child: const Text('Cancel')),
+          TextButton(
+              onPressed: () => Navigator.pop(c, true),
+              child: const Text('Delete',
+                  style: TextStyle(color: DaysoffColors.danger))),
         ],
       ),
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-      child: const Center(
-        child: Text(
-          'Sign out',
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-            color: DaysoffColors.danger,
+    );
+    if (ok == true) {
+      await ref.read(authControllerProvider.notifier).deleteAccount();
+    }
+  }
+}
+
+class _DangerCard extends StatelessWidget {
+  const _DangerCard({required this.label, required this.onTap});
+  final String label;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(12),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(12),
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: DaysoffColors.outlineVariant),
+          ),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          child: Center(
+            child: Text(
+              label,
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                color: DaysoffColors.danger,
+              ),
+            ),
           ),
         ),
       ),

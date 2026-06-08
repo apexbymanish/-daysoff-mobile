@@ -1,14 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:daysoff_mobile/auth/auth_controller.dart';
+import 'package:daysoff_mobile/auth/token_store.dart';
 import 'package:daysoff_mobile/providers/theme_mode_provider.dart';
 import 'package:daysoff_mobile/screens/settings/settings_screen.dart';
 import 'package:daysoff_mobile/widgets/preferences_editor_sheet.dart';
 
 void main() {
   Future<void> pump(WidgetTester tester) => tester.pumpWidget(
-        const ProviderScope(
-          child: MaterialApp(home: SettingsScreen()),
+        ProviderScope(
+          // Empty in-memory store → the account section resolves to logged-out.
+          overrides: [
+            tokenStoreProvider.overrideWithValue(InMemoryTokenStore()),
+          ],
+          child: const MaterialApp(home: SettingsScreen()),
         ),
       );
 
@@ -71,19 +77,19 @@ void main() {
     expect(find.byType(SettingsScreen), findsOneWidget);
   });
 
-  // ── ACCOUNT placeholders (disabled) ──────────────────────────────────────
+  // ── ACCOUNT section ──────────────────────────────────────────────────────
 
-  testWidgets('Sign out row renders but does not navigate', (tester) async {
+  testWidgets('logged out shows the Sign in / Create account row',
+      (tester) async {
     await pump(tester);
-    // Scroll down until the item is visible.
+    await tester.pumpAndSettle(); // let the auth state hydrate
     await tester.scrollUntilVisible(
-      find.text('Sign out'),
+      find.text('Sign in / Create account'),
       150,
       scrollable: find.byType(Scrollable),
     );
-    expect(find.text('Sign out'), findsOneWidget);
-    await tester.tap(find.text('Sign out'), warnIfMissed: false);
-    await tester.pumpAndSettle();
-    expect(find.byType(SettingsScreen), findsOneWidget);
+    expect(find.text('Sign in / Create account'), findsOneWidget);
+    // Old placeholders are gone.
+    expect(find.text('Sign out'), findsNothing);
   });
 }
