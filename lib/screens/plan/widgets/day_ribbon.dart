@@ -2,31 +2,14 @@ import 'package:flutter/material.dart';
 import '../../../api/models/plan_trip.dart';
 import '../../../core/break_days.dart';
 import '../../../theme/colors.dart';
+import '../../../theme/typography.dart';
 
-/// A row of large ribbon blocks, one per break day.
-/// H (holiday) = indigo, P (PTO) = olive, W (weekend) = gray.
+/// Option C — proportional colour bar (H / PTO / Weekend) with legend below.
+/// Replaces the old H/P/W letter-tile row.
 class DayRibbon extends StatelessWidget {
-  const DayRibbon({super.key, required this.trip});
+  const DayRibbon({super.key, required this.trip, this.barHeight = 20.0});
   final PlanTrip trip;
-
-  ({String label, Color bg, Color fg}) _block(DateTime day) =>
-      switch (classifyBreakDay(day, trip.ptoDates)) {
-        BreakDayKind.holiday => (
-            label: 'H',
-            bg: DaysoffColors.indigoContainer.withValues(alpha: 0.35),
-            fg: DaysoffColors.indigo,
-          ),
-        BreakDayKind.pto => (
-            label: 'P',
-            bg: DaysoffColors.oliveFixed,
-            fg: DaysoffColors.olive,
-          ),
-        BreakDayKind.weekend => (
-            label: 'W',
-            bg: DaysoffColors.surfaceContainerHigh,
-            fg: DaysoffColors.neutral700,
-          ),
-      };
+  final double barHeight;
 
   @override
   Widget build(BuildContext context) {
@@ -36,32 +19,93 @@ class DayRibbon extends StatelessWidget {
         d = d.add(const Duration(days: 1))) {
       days.add(d);
     }
-    return Row(
+
+    int hol = 0, pto = 0, wkd = 0;
+    for (final d in days) {
+      switch (classifyBreakDay(d, trip.ptoDates)) {
+        case BreakDayKind.holiday:
+          hol++;
+        case BreakDayKind.pto:
+          pto++;
+        case BreakDayKind.weekend:
+          wkd++;
+      }
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        for (var i = 0; i < days.length; i++) ...[
-          if (i > 0) const SizedBox(width: 6),
-          Expanded(
-            child: Builder(builder: (_) {
-              final b = _block(days[i]);
-              return Container(
-                height: 40,
-                alignment: Alignment.center,
-                decoration: BoxDecoration(
-                  color: b.bg,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Text(
-                  b.label,
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w700,
-                    color: b.fg,
+        // Proportional colour bar — flex values = day counts
+        ClipRRect(
+          borderRadius: BorderRadius.circular(barHeight <= 10 ? 4 : 8),
+          child: SizedBox(
+            height: barHeight,
+            child: Row(
+              children: [
+                if (hol > 0)
+                  Expanded(
+                    flex: hol,
+                    child: ColoredBox(color: DaysoffColors.holidaySurface),
                   ),
-                ),
-              );
-            }),
+                if (pto > 0)
+                  Expanded(
+                    flex: pto,
+                    child: ColoredBox(color: DaysoffColors.brandTeal),
+                  ),
+                if (wkd > 0)
+                  Expanded(
+                    flex: wkd,
+                    child: const ColoredBox(color: Color(0xFFE5E7EB)),
+                  ),
+              ],
+            ),
           ),
-        ],
+        ),
+        const SizedBox(height: 8),
+        // Legend
+        Row(
+          children: [
+            if (hol > 0)
+              _LegendDot(
+                color: DaysoffColors.koreaRed.withValues(alpha: 0.6),
+                label: '$hol hol',
+              ),
+            if (hol > 0 && pto > 0) const SizedBox(width: 12),
+            if (pto > 0)
+              _LegendDot(color: DaysoffColors.brandTeal, label: '$pto PTO'),
+            if (wkd > 0) const SizedBox(width: 12),
+            if (wkd > 0)
+              _LegendDot(
+                color: const Color(0xFFD1D5DB),
+                label: '$wkd wkd',
+              ),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+class _LegendDot extends StatelessWidget {
+  const _LegendDot({required this.color, required this.label});
+  final Color color;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          width: 8,
+          height: 8,
+          decoration: BoxDecoration(
+            color: color,
+            borderRadius: BorderRadius.circular(2),
+          ),
+        ),
+        const SizedBox(width: 4),
+        Text(label, style: labelCaps(fontSize: 9, color: DaysoffColors.neutral500)),
       ],
     );
   }

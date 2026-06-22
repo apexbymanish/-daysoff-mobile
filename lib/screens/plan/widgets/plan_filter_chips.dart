@@ -20,6 +20,7 @@ class PlanFilterChips extends ConsumerWidget {
     final year = ref.watch(selectedYearProvider);
     final budget = ref.watch(ptoBudgetProvider);
     final weekend = ref.watch(weekendProvider);
+    final range = ref.watch(breakLengthProvider);
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
@@ -58,12 +59,27 @@ class PlanFilterChips extends ConsumerWidget {
                   const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
             ),
           ),
+          // PTO budget — olive bolt, matching the "X PTO" pills on cards.
           _Chip(
             onTap: () => showPreferencesEditor(context),
-            child: Text(
-              '$budget days',
-              style:
-                  const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+            background: DaysoffColors.oliveFixed.withValues(alpha: 0.5),
+            border: DaysoffColors.oliveFixed,
+            child: _LabeledValue(
+              icon: Icons.bolt,
+              iconColor: DaysoffColors.olive,
+              label: '$budget days PTO',
+            ),
+          ),
+          // Break-length range — teal beach, matching the break-length pill.
+          // Mirrors the "Break length (3–10 days)" slider in the prefs sheet.
+          _Chip(
+            onTap: () => showPreferencesEditor(context),
+            background: DaysoffColors.brandTeal.withValues(alpha: 0.08),
+            border: DaysoffColors.brandTeal.withValues(alpha: 0.4),
+            child: _LabeledValue(
+              icon: Icons.beach_access,
+              iconColor: DaysoffColors.brandTeal,
+              label: '${range.min}–${range.max} day break',
             ),
           ),
         ],
@@ -114,11 +130,20 @@ class PlanFilterChips extends ConsumerWidget {
   }
 }
 
-/// A white pill with outlineVariant border and soft shadow.
+/// A pill with a soft shadow. Defaults to white with an [outlineVariant]
+/// border; pass [background]/[border] to tint it (used to colour-code the
+/// PTO and break-length chips).
 class _Chip extends StatelessWidget {
-  const _Chip({required this.child, required this.onTap});
+  const _Chip({
+    required this.child,
+    required this.onTap,
+    this.background,
+    this.border,
+  });
   final Widget child;
   final VoidCallback onTap;
+  final Color? background;
+  final Color? border;
 
   @override
   Widget build(BuildContext context) {
@@ -128,9 +153,9 @@ class _Chip extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: background ?? Colors.white,
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: DaysoffColors.outlineVariant),
+          border: Border.all(color: border ?? DaysoffColors.outlineVariant),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withValues(alpha: 0.04),
@@ -141,6 +166,34 @@ class _Chip extends StatelessWidget {
         ),
         child: child,
       ),
+    );
+  }
+}
+
+/// Leading icon + label, used to make the PTO and break-length chips
+/// self-explanatory at a glance.
+class _LabeledValue extends StatelessWidget {
+  const _LabeledValue({
+    required this.icon,
+    required this.iconColor,
+    required this.label,
+  });
+  final IconData icon;
+  final Color iconColor;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(icon, size: 16, color: iconColor),
+        const SizedBox(width: 6),
+        Text(
+          label,
+          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+        ),
+      ],
     );
   }
 }

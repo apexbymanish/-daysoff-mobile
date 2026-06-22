@@ -13,7 +13,7 @@ import 'models/sandwiches_response.dart';
 /// Thin dio wrapper for the daysoff-api.
 ///
 /// Base URL comes from --dart-define=API_BASE_URL=http://host:port
-/// and defaults to localhost:8080 when not provided.
+/// and defaults to localhost:8000 when not provided.
 ///
 /// When a [TokenStore] is supplied, an interceptor attaches the access token
 /// to every request and transparently refreshes it once on a 401.
@@ -25,7 +25,7 @@ class ApiClient {
               BaseOptions(
                 baseUrl: const String.fromEnvironment(
                   'API_BASE_URL',
-                  defaultValue: 'http://127.0.0.1:8080',
+                  defaultValue: 'http://127.0.0.1:8000',
                 ),
                 connectTimeout: const Duration(seconds: 8),
                 receiveTimeout: const Duration(seconds: 12),
@@ -144,6 +144,7 @@ class ApiClient {
     int? budget,
     int? minLength,
     int? maxLength,
+    int maxPto = 3,
   }) async {
     final response = await _dio.get<Map<String, dynamic>>(
       Endpoints.sandwiches,
@@ -151,6 +152,7 @@ class ApiClient {
         'country': country,
         'year': year,
         if (workweek != null && workweek.isNotEmpty) 'workweek': workweek.join(','),
+        'max_pto': maxPto,
         'budget': ?budget,
         'min_length': ?minLength,
         'max_length': ?maxLength,

@@ -9,7 +9,8 @@ import '../../l10n/app_localizations.dart';
 import '../../providers/plan_provider.dart';
 import '../../providers/plan_view_provider.dart';
 import '../../providers/preferences_provider.dart';
-import '../../providers/sandwiches_provider.dart';
+import '../../api/models/sandwich_record.dart';
+import '../../providers/sandwiches_provider.dart' show SandwichesQuery, sandwichesProvider;
 import '../../providers/selection_provider.dart';
 import '../../widgets/preferences_editor_sheet.dart';
 import '../../router/app_router.dart';
@@ -242,13 +243,17 @@ class _SandwichView extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final month = ref.watch(planMonthProvider);
     final l = AppL10n.of(context);
+    // Pass the full PTO budget as max_pto so the API finds every possible
+    // bridge — the user sees everything they can afford, grouped by gain.
+    // Sandwiches are shown grouped by break length, so don't apply the
+    // plan's break-length range here — short bridges (4–6 days) would be
+    // silently hidden when minLength=9 is active.
     final query = SandwichesQuery(
       country: country,
       year: year,
       workweek: weekend,
       budget: budget,
-      minLength: range.min,
-      maxLength: range.max,
+      maxPto: budget.clamp(1, 7),
     );
     final async = ref.watch(sandwichesProvider(query));
     return async.when(
@@ -301,24 +306,83 @@ class _SandwichView extends ConsumerWidget {
             ),
           );
         }
+
+        // Group by total break length, longest first.
+        final grouped = <int, List<SandwichRecord>>{};
+        for (final s in filtered) {
+          (grouped[s.breakLength] ??= []).add(s);
+        }
+        final lengths = grouped.keys.toList()
+          ..sort((a, b) => b.compareTo(a));
+
         return ListView(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
           children: [
             Padding(
-              padding: const EdgeInsets.only(bottom: 8),
+              padding: const EdgeInsets.only(bottom: 4),
               child: Text(
                 l.sandwichHint,
                 style: const TextStyle(
                     fontSize: 14, color: DaysoffColors.neutral700, height: 1.5),
               ),
             ),
-            for (final s in filtered) SandwichCard(record: s),
+            for (final length in lengths) ...[
+              _BreakLengthHeader(
+                length: length,
+                count: grouped[length]!.length,
+              ),
+              for (final s in grouped[length]!) SandwichCard(record: s),
+            ],
             const SizedBox(height: 8),
             EfficiencyInsight(records: filtered),
             const SizedBox(height: 32),
           ],
         );
       },
+    );
+  }
+}
+
+// ── Break-length group header ──────────────────────────────────────────────────
+
+class _BreakLengthHeader extends StatelessWidget {
+  const _BreakLengthHeader({required this.length, required this.count});
+  final int length;
+  final int count;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 20, bottom: 6),
+      child: Row(
+        children: [
+          Text(
+            '$length-day breaks',
+            style: const TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w800,
+              color: DaysoffColors.neutral900,
+              letterSpacing: -0.3,
+            ),
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Divider(
+              color: DaysoffColors.neutral300,
+              thickness: 1,
+            ),
+          ),
+          const SizedBox(width: 10),
+          Text(
+            count == 1 ? '1 option' : '$count options',
+            style: const TextStyle(
+              fontSize: 11,
+              fontWeight: FontWeight.w600,
+              color: DaysoffColors.neutral700,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

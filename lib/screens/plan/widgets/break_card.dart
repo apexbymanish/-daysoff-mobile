@@ -50,154 +50,190 @@ class BreakCard extends StatelessWidget {
         clipBehavior: Clip.antiAlias,
         child: Stack(
           children: [
-            Padding(
-              padding: const EdgeInsets.all(24),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Header row: numeral + PTO pill
-                  Row(
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // ── Split stat row ──────────────────────────────────
+                IntrinsicHeight(
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      // Left: days off + date range
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.fromLTRB(24, 24, 14, 20),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.baseline,
+                                textBaseline: TextBaseline.alphabetic,
+                                children: [
+                                  Text(
+                                    '${trip.breakLength}',
+                                    style: const TextStyle(
+                                      fontSize: 52,
+                                      fontWeight: FontWeight.w900,
+                                      color: DaysoffColors.brandTeal,
+                                      letterSpacing: -1,
+                                      height: 1.0,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 5),
+                                  const Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'days',
+                                        style: TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w700,
+                                          color: DaysoffColors.brandTeal,
+                                          height: 1.2,
+                                        ),
+                                      ),
+                                      Text(
+                                        'off',
+                                        style: TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w700,
+                                          color: DaysoffColors.brandTeal,
+                                          height: 1.2,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 6),
+                              Text(
+                                range,
+                                style: const TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w500,
+                                  color: DaysoffColors.neutral500,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      // Vertical divider
+                      VerticalDivider(
+                        width: 1,
+                        thickness: 1,
+                        color: DaysoffColors.outlineVariant
+                            .withValues(alpha: 0.5),
+                      ),
+                      // Right: PTO cost
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.fromLTRB(14, 24, 24, 20),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                '${trip.ptoCost}',
+                                style: const TextStyle(
+                                  fontSize: 44,
+                                  fontWeight: FontWeight.w900,
+                                  color: DaysoffColors.brandTeal,
+                                  letterSpacing: -1,
+                                  height: 1.0,
+                                ),
+                              ),
+                              const SizedBox(height: 3),
+                              Text(
+                                'PTO USED',
+                                style: labelCaps(
+                                  fontSize: 10,
+                                  color: DaysoffColors.neutral500,
+                                ),
+                              ),
+                              const SizedBox(height: 2),
+                              const Text(
+                                'days',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: DaysoffColors.neutral500,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                // ── Thin ribbon + footer ─────────────────────────────
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
+                  child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Numeral + "days" + date range
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.baseline,
-                              textBaseline: TextBaseline.alphabetic,
-                              children: [
-                                Text(
-                                  '${trip.breakLength}',
-                                  style: const TextStyle(
-                                    fontSize: 52,
-                                    fontWeight: FontWeight.w700,
-                                    color: DaysoffColors.brandTeal,
-                                    letterSpacing: -1,
-                                    height: 1.0,
-                                  ),
-                                ),
-                                const SizedBox(width: 6),
-                                const Text(
-                                  'days',
-                                  style: TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.w600,
-                                    color: DaysoffColors.brandTeal,
-                                  ),
-                                ),
-                              ],
+                      DayRibbon(trip: trip, barHeight: 8),
+                      const SizedBox(height: 16),
+                      Container(
+                        decoration: BoxDecoration(
+                          border: Border(
+                            top: BorderSide(
+                              color: DaysoffColors.outlineVariant
+                                  .withValues(alpha: 0.3),
                             ),
-                            const SizedBox(height: 4),
-                            Text(
-                              range,
-                              style: const TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w500,
-                                color: DaysoffColors.neutral500,
+                          ),
+                        ),
+                        padding: const EdgeInsets.only(top: 16),
+                        child: Row(
+                          children: [
+                            const Icon(
+                              Icons.flag_outlined,
+                              size: 20,
+                              color: DaysoffColors.neutral700,
+                            ),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                anchor,
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w500,
+                                  color: DaysoffColors.neutral700,
+                                ),
+                                overflow: TextOverflow.ellipsis,
                               ),
                             ),
+                            if (isBestValue && onTap != null)
+                              TextButton(
+                                onPressed: onTap,
+                                style: TextButton.styleFrom(
+                                  padding: EdgeInsets.zero,
+                                  minimumSize: Size.zero,
+                                  tapTargetSize:
+                                      MaterialTapTargetSize.shrinkWrap,
+                                ),
+                                child: const Text(
+                                  'Details ›',
+                                  style: TextStyle(
+                                    color: DaysoffColors.brandTeal,
+                                    fontWeight: FontWeight.w800,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                              ),
                           ],
                         ),
                       ),
-                      const SizedBox(width: 8),
-                      // PTO used pill
-                      _PtoPill(ptoCost: trip.ptoCost),
                     ],
                   ),
-                  const SizedBox(height: 20),
-                  // Ribbon blocks
-                  DayRibbon(trip: trip),
-                  const SizedBox(height: 20),
-                  // Footer
-                  Container(
-                    decoration: BoxDecoration(
-                      border: Border(
-                        top: BorderSide(
-                          color: DaysoffColors.outlineVariant.withValues(alpha: 0.3),
-                        ),
-                      ),
-                    ),
-                    padding: const EdgeInsets.only(top: 16),
-                    child: Row(
-                      children: [
-                        const Icon(
-                          Icons.flag_outlined,
-                          size: 20,
-                          color: DaysoffColors.neutral700,
-                        ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: Text(
-                            anchor,
-                            style: const TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500,
-                              color: DaysoffColors.neutral700,
-                            ),
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                        if (isBestValue && onTap != null)
-                          TextButton(
-                            onPressed: onTap,
-                            style: TextButton.styleFrom(
-                              padding: EdgeInsets.zero,
-                              minimumSize: Size.zero,
-                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                            ),
-                            child: Text(
-                              'Details ›',
-                              style: TextStyle(
-                                color: DaysoffColors.brandTeal,
-                                fontWeight: FontWeight.w800,
-                                fontSize: 14,
-                              ),
-                            ),
-                          ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
             // "BEST VALUE" rotated badge
             if (isBestValue) const _BestValueBadge(),
           ],
         ),
-      ),
-    );
-  }
-}
-
-class _PtoPill extends StatelessWidget {
-  const _PtoPill({required this.ptoCost});
-  final int ptoCost;
-
-  @override
-  Widget build(BuildContext context) {
-    final Color bg;
-    final Color fg;
-    final String label;
-    if (ptoCost == 0) {
-      bg = DaysoffColors.redContainer;
-      fg = DaysoffColors.onRedContainer;
-      label = '0 PTO USED';
-    } else {
-      bg = DaysoffColors.oliveFixed;
-      fg = DaysoffColors.olive;
-      label = '$ptoCost PTO USED';
-    }
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-      decoration: BoxDecoration(
-        color: bg,
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Text(
-        label,
-        style: labelCaps(fontSize: 10, color: fg, fontWeight: FontWeight.w700),
       ),
     );
   }
@@ -222,7 +258,7 @@ class _BestValueBadge extends StatelessWidget {
             'BEST VALUE',
             style: labelCaps(
               fontSize: 10,
-              color: const Color(0xFFBAECEC), // primary-fixed / cream
+              color: const Color(0xFFB8C5FF), // primary-fixed tint (indigo)
               fontWeight: FontWeight.w700,
             ),
           ),

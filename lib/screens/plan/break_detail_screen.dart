@@ -13,8 +13,6 @@ import '../../theme/colors.dart';
 import '../../theme/typography.dart';
 import '../home/widgets/scenery.dart';
 
-const _kSage = Color(0xFF8E9775);
-const _kWarmCream = Color(0xFFFDFBF7);
 
 class BreakDetailScreen extends ConsumerWidget {
   const BreakDetailScreen({super.key, required this.trip});
@@ -110,7 +108,7 @@ class BreakDetailScreen extends ConsumerWidget {
             height: 56,
             child: FilledButton(
               style: FilledButton.styleFrom(
-                backgroundColor: _kSage,
+                backgroundColor: DaysoffColors.brandTeal,
                 foregroundColor: Colors.white,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
@@ -186,7 +184,7 @@ class BreakDetailScreen extends ConsumerWidget {
                                 padding: const EdgeInsets.symmetric(
                                     horizontal: 8, vertical: 2),
                                 decoration: BoxDecoration(
-                                  color: _kSage,
+                                  color: DaysoffColors.brandTeal,
                                   borderRadius: BorderRadius.circular(999),
                                 ),
                                 child: Text(
@@ -215,8 +213,8 @@ class BreakDetailScreen extends ConsumerWidget {
                                     text: anchorNative != null
                                         ? '$anchor / $anchorNative'
                                         : anchor,
-                                    style:
-                                        const TextStyle(color: _kSage),
+                                    style: const TextStyle(
+                                        color: DaysoffColors.oliveFixed),
                                   ),
                               ],
                             ),
@@ -274,12 +272,12 @@ class BreakDetailScreen extends ConsumerWidget {
                           width: 40,
                           height: 40,
                           decoration: BoxDecoration(
-                            color: _kSage.withValues(alpha: 0.20),
+                            color: DaysoffColors.brandTeal.withValues(alpha: 0.20),
                             shape: BoxShape.circle,
                           ),
                           child: const Icon(
                             Icons.event_available,
-                            color: _kSage,
+                            color: DaysoffColors.brandTeal,
                             size: 20,
                           ),
                         ),
@@ -347,7 +345,7 @@ class _DayRow extends StatelessWidget {
       case BreakDayKind.pto:
         overline = 'ORDINARY DAY';
         tagLabel = 'PTO';
-        tagBg = _kSage.withValues(alpha: 0.12);
+        tagBg = DaysoffColors.brandTeal.withValues(alpha: 0.15);
         break;
       case BreakDayKind.holiday:
         overline = 'FESTIVAL';
@@ -409,7 +407,7 @@ class _DayRow extends StatelessWidget {
                 borderRadius: BorderRadius.circular(999),
                 border: Border.all(
                   color: switch (kind) {
-                    BreakDayKind.pto => _kSage.withValues(alpha: 0.20),
+                    BreakDayKind.pto => DaysoffColors.brandTeal.withValues(alpha: 0.20),
                     BreakDayKind.holiday =>
                       DaysoffColors.koreaRed.withValues(alpha: 0.20),
                     BreakDayKind.weekend =>
@@ -424,7 +422,7 @@ class _DayRow extends StatelessWidget {
                 softWrap: false,
                 style: labelCaps(
                   fontSize: 11,
-                  color: _kWarmCream,
+                  color: Colors.white,
                   letterSpacing: 0.8,
                 ),
               ),

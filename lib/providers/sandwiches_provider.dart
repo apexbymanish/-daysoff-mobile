@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../api/models/sandwiches_response.dart';
 import 'api_provider.dart';
+import 'preferences_provider.dart';
 
 /// Args for the sandwiches query.
 class SandwichesQuery {
@@ -12,6 +13,7 @@ class SandwichesQuery {
     this.budget,
     this.minLength,
     this.maxLength,
+    this.maxPto = 3,
   });
 
   final String country;
@@ -24,6 +26,10 @@ class SandwichesQuery {
   final int? minLength;
   final int? maxLength;
 
+  /// Widest workday gap to bridge — controls how long a sandwich can be.
+  /// Default 3; raise to reveal longer multi-holiday breaks.
+  final int maxPto;
+
   @override
   bool operator ==(Object other) =>
       other is SandwichesQuery &&
@@ -32,12 +38,21 @@ class SandwichesQuery {
       other.budget == budget &&
       other.minLength == minLength &&
       other.maxLength == maxLength &&
+      other.maxPto == maxPto &&
       _listEq(other.workweek, workweek);
 
   @override
   int get hashCode => Object.hash(
-      country, year, budget, minLength, maxLength, Object.hashAll(workweek));
+      country, year, budget, minLength, maxLength, maxPto, Object.hashAll(workweek));
 }
+
+/// Max PTO days to bridge in the Sandwich tab (1–7).
+/// Initialises from the user's PTO budget so all affordable sandwiches are
+/// visible on first open; the in-tab slider lets users narrow it down.
+final sandwichMaxPtoProvider = StateProvider<int>((ref) {
+  final budget = ref.read(ptoBudgetProvider);
+  return budget.clamp(1, 7);
+});
 
 bool _listEq(List<String> a, List<String> b) {
   if (a.length != b.length) return false;
@@ -58,5 +73,6 @@ final sandwichesProvider =
     budget: q.budget,
     minLength: q.minLength,
     maxLength: q.maxLength,
+    maxPto: q.maxPto,
   );
 });

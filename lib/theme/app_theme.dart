@@ -7,13 +7,19 @@ class DaysoffTheme {
   DaysoffTheme._();
 
   static ThemeData light() {
+    // 60-30-10: creamSoft (#F5F3FF) is the 60% neutral surface.
+    // Brand indigo (#312E81) is seeded as primary — M3 will derive tonal
+    // palette from it; we pin the key roles explicitly below.
     final colorScheme = ColorScheme.fromSeed(
       seedColor: DaysoffColors.brandTeal,
       brightness: Brightness.light,
       primary: DaysoffColors.brandTeal,
-      secondary: DaysoffColors.sage,
-      tertiary: DaysoffColors.peach,
-      surface: DaysoffColors.creamSoft,
+      onPrimary: const Color(0xFFFFFFFF),
+      primaryContainer: DaysoffColors.oliveFixed,
+      onPrimaryContainer: DaysoffColors.brandTeal,
+      secondary: DaysoffColors.neutral700,
+      surface: const Color(0xFFFFFFFF),
+      onSurface: DaysoffColors.neutral900,
     );
 
     return ThemeData(
@@ -36,8 +42,8 @@ class DaysoffTheme {
     final colorScheme = ColorScheme.fromSeed(
       seedColor: DaysoffColors.brandTeal,
       brightness: Brightness.dark,
-      primary: DaysoffColors.sage,
-      secondary: DaysoffColors.peach,
+      primary: DaysoffColors.indigoContainer,
+      secondary: DaysoffColors.neutral500,
       surface: DaysoffColors.darkSurface,
     );
 
