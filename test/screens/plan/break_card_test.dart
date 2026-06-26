@@ -50,4 +50,17 @@ void main() {
     expect(find.text('Details ›'), findsOneWidget);
     expect(find.text('BEST VALUE'), findsOneWidget);
   });
+
+  testWidgets('Details › button has minimum 44px tap target', (tester) async {
+    await tester.pumpWidget(_host(BreakCard(
+      trip: _trip(),
+      isBestValue: true,
+      onTap: () {},
+    )));
+    final btn = tester.widget<TextButton>(find.widgetWithText(TextButton, 'Details ›'));
+    final style = btn.style!;
+    final size = style.minimumSize?.resolve({});
+    expect(size?.width, greaterThanOrEqualTo(44));
+    expect(size?.height, greaterThanOrEqualTo(44));
+  });
 }

@@ -136,8 +136,6 @@ class _HolidaysList extends ConsumerWidget {
               IconButton(
                 icon: const Icon(Icons.language, color: DaysoffColors.brandTeal),
                 onPressed: () => context.push(AppRoutes.countryPicker),
-                padding: EdgeInsets.zero,
-                constraints: const BoxConstraints(),
               ),
               const SizedBox(width: 4),
               // "daysoff" wordmark
@@ -239,8 +237,6 @@ class _YearStepper extends ConsumerWidget {
           onPressed: () =>
               ref.read(selectedYearProvider.notifier).state = year - 1,
           iconSize: 20,
-          padding: EdgeInsets.zero,
-          constraints: const BoxConstraints(),
         ),
         Text(
           '$year',
@@ -255,8 +251,6 @@ class _YearStepper extends ConsumerWidget {
           onPressed: () =>
               ref.read(selectedYearProvider.notifier).state = year + 1,
           iconSize: 20,
-          padding: EdgeInsets.zero,
-          constraints: const BoxConstraints(),
         ),
       ],
     );

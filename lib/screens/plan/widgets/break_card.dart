@@ -32,11 +32,12 @@ class BreakCard extends StatelessWidget {
         isBestValue ? DaysoffColors.brandTeal : DaysoffColors.outlineVariant;
     final borderWidth = isBestValue ? 2.0 : 1.0;
 
+    final cs = Theme.of(context).colorScheme;
     return GestureDetector(
       onTap: onTap,
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: cs.surface,
           borderRadius: BorderRadius.circular(28),
           border: Border.all(color: borderColor, width: borderWidth),
           boxShadow: [
@@ -49,6 +50,7 @@ class BreakCard extends StatelessWidget {
         ),
         clipBehavior: Clip.antiAlias,
         child: Stack(
+          clipBehavior: Clip.hardEdge,
           children: [
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -123,8 +125,7 @@ class BreakCard extends StatelessWidget {
                       VerticalDivider(
                         width: 1,
                         thickness: 1,
-                        color: DaysoffColors.outlineVariant
-                            .withValues(alpha: 0.5),
+                        color: cs.outlineVariant.withValues(alpha: 0.5),
                       ),
                       // Right: PTO cost
                       Expanded(
@@ -179,27 +180,26 @@ class BreakCard extends StatelessWidget {
                         decoration: BoxDecoration(
                           border: Border(
                             top: BorderSide(
-                              color: DaysoffColors.outlineVariant
-                                  .withValues(alpha: 0.3),
+                              color: cs.outlineVariant.withValues(alpha: 0.3),
                             ),
                           ),
                         ),
                         padding: const EdgeInsets.only(top: 16),
                         child: Row(
                           children: [
-                            const Icon(
+                            Icon(
                               Icons.flag_outlined,
                               size: 20,
-                              color: DaysoffColors.neutral700,
+                              color: cs.onSurfaceVariant,
                             ),
                             const SizedBox(width: 8),
                             Expanded(
                               child: Text(
                                 anchor,
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w500,
-                                  color: DaysoffColors.neutral700,
+                                  color: cs.onSurfaceVariant,
                                 ),
                                 overflow: TextOverflow.ellipsis,
                               ),
@@ -208,10 +208,8 @@ class BreakCard extends StatelessWidget {
                               TextButton(
                                 onPressed: onTap,
                                 style: TextButton.styleFrom(
-                                  padding: EdgeInsets.zero,
-                                  minimumSize: Size.zero,
-                                  tapTargetSize:
-                                      MaterialTapTargetSize.shrinkWrap,
+                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                  minimumSize: const Size(44, 44),
                                 ),
                                 child: const Text(
                                   'Details ›',
