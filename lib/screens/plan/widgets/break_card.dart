@@ -37,7 +37,7 @@ class BreakCard extends StatelessWidget {
       onTap: onTap,
       child: Container(
         decoration: BoxDecoration(
-          color: cs.surface,
+          color: Colors.white,
           borderRadius: BorderRadius.circular(28),
           border: Border.all(color: borderColor, width: borderWidth),
           boxShadow: [
@@ -50,7 +50,6 @@ class BreakCard extends StatelessWidget {
         ),
         clipBehavior: Clip.antiAlias,
         child: Stack(
-          clipBehavior: Clip.hardEdge,
           children: [
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -125,7 +124,7 @@ class BreakCard extends StatelessWidget {
                       VerticalDivider(
                         width: 1,
                         thickness: 1,
-                        color: cs.outlineVariant.withValues(alpha: 0.5),
+                        color: DaysoffColors.outlineVariant.withValues(alpha: 0.5),
                       ),
                       // Right: PTO cost
                       Expanded(
@@ -190,7 +189,7 @@ class BreakCard extends StatelessWidget {
                             Icon(
                               Icons.flag_outlined,
                               size: 20,
-                              color: cs.onSurfaceVariant,
+                              color: DaysoffColors.neutral700,
                             ),
                             const SizedBox(width: 8),
                             Expanded(
@@ -199,7 +198,7 @@ class BreakCard extends StatelessWidget {
                                 style: TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w500,
-                                  color: cs.onSurfaceVariant,
+                                  color: DaysoffColors.neutral700,
                                 ),
                                 overflow: TextOverflow.ellipsis,
                               ),
